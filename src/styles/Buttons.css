@@ -1,0 +1,93 @@
+/* 기본 스타일 */
+.button {
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  margin: 2px;
+}
+
+/* 기본 스타일 */
+button.btn-invalid {
+  background-color: #aca0eb;
+}
+
+/* 유효할 때 */
+button.btn-valid {
+  background-color: #7f6aee;
+}
+
+/* 타입별 스타일 */
+.button-submit {
+  padding: 10px 25px;
+  background-color: #aca0eb;
+  font-size: 14px;
+  color: white;
+  border-radius: 8px;
+}
+
+.button-edit {
+  display: flex;
+  justify-content: flex-end;
+  background-color: transparent;
+  border: 1px solid #aaa0e6;
+  border-radius: 8px;
+}
+
+.button-ghost {
+  padding: 3px;
+  background-color: transparent;
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.button-round {
+  padding: 10px 25px;
+  background-color: #aaa0e6;
+  font-size: 14px;
+  color: white;
+  border-radius: 60px;
+}
+
+.button-reaction {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  background-color: #d9d9d9;
+  border-radius: 16px;
+  width: 90px;
+  padding: 14px;
+  margin: 4px;
+  cursor: pointer;
+  line-height: 1.5;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 크기별 스타일 */
+.button-tiny {
+  margin-left: 8px; /* 버튼 사이 여백 추가 */
+  padding: 6px 12px;
+}
+
+.button-comment {
+  border-radius: 16px;
+  font-size: 16px;
+  padding: 13px 40px;
+}
+
+.button-large {
+  width: 100%;
+}
+
+.button-post {
+  width: 70%;
+  align-self: center;
+  margin: 10px 0;
+}
+
+.button-base {
+}

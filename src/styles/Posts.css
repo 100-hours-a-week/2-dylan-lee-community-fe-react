@@ -1,0 +1,67 @@
+.normal-weight {
+  font-weight: normal; /* 또는 400 */
+}
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.make-post {
+  align-self: flex-end;
+  margin-bottom: 20px;
+}
+
+.post-box {
+  display: flex;
+  background-color: #ffffff;
+  border-radius: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  margin: 8px 0;
+  box-shadow: 3px 4px 4px 0px #cccccc40;
+  cursor: pointer;
+}
+
+.post-box-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 24px 30px;
+  border-bottom: 1px solid #f4f5f7; /* 배경색과 동일한 줄 */
+  margin-bottom: 1px;
+}
+
+.post-title {
+  font-size: 24px;
+  font-weight: 700;
+  padding-bottom: 10px;
+}
+
+.post-info {
+  display: flex;
+  flex-direction: row;
+  font-size: x-small;
+  color: #363636;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.post-meta {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.post-date {
+  display: flex;
+  flex-direction: flex-end;
+  align-items: flex-end;
+  font-size: 14px;
+}
