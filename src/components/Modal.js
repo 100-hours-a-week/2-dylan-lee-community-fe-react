@@ -12,8 +12,8 @@ const Modal = ({ isOpen, title, message, onConfirm, onClose }) => {
       {/* 모달 */}
       <div className="modal">
         <div className="modal-content">
-          <h2 id="title">${title}</h2>
-          <p>${message}</p>
+          <h2 id="title">{title}</h2>
+          <p>{message}</p>
           <div className="modal-actions">
             <button id="cancel-action" onClick={onClose}>
               취소

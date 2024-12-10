@@ -1,20 +1,44 @@
-// // 인증 여부에 따라 페이지 이동 제어
-// import React from "react";
-// import { Navigate } from "react-router-dom";
-// import { useSession } from "../context/SessionContext";
+// 인증 여부에 따라 페이지 이동 제어
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSession } from "../context/SessionContext";
 
-// const ProtectedRoute = ({ children }) => {
-//   const { isAuthenticated, loading } = useSession();
+const HomeRedirect = () => {
+  const { user, loading } = useSession();
+  const navigate = useNavigate();
 
-//   if (loading) return <div>로딩 중...</div>; // 로딩 상태 처리
-//   return isAuthenticated ? children : <Navigate to="/login" replace />;
-// };
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        navigate("/posts");
+      } else {
+        navigate("/login");
+      }
+    }
+  }, [user, loading, navigate]);
 
-// const PublicRoute = ({ children }) => {
-//   const { isAuthenticated, loading } = useSession();
+  if (loading) {
+    return <div>로딩중...</div>;
+  }
 
-//   if (loading) return <div>로딩 중...</div>; // 로딩 상태 처리
-//   return !isAuthenticated ? children : <Navigate to="/posts" replace />;
-// };
+  return null;
+};
 
-// export { ProtectedRoute, PublicRoute };
+const GuestRoute = ({ children }) => {
+  const { user, loading } = useSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/");
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return <div>로딩중...</div>;
+  }
+
+  return children;
+};
+
+export { HomeRedirect, GuestRoute };

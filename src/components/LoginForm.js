@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import "../styles/AuthForm.css";
 import Button from "./Buttons";
 import { useNavigate } from "react-router-dom";
-import { apiRequest } from "../utils/apiClient";
 import { useSession } from "../context/SessionContext";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { setUser } = useSession();
+  const { setUser, fetchUser } = useSession();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,19 +62,25 @@ const LoginForm = () => {
     if (handleValidation()) {
       try {
         // 서버에 로그인 요청
-        const data = await apiRequest("/auth/login", {
+        const data = await fetch("/api/v1/auth/login", {
           method: "POST",
-          body: {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             email,
             password,
-          },
+          }),
         });
 
+        if (!data.ok) {
+          throw new Error("로그아웃 실패");
+        }
         // 세션 정보 업데이트
-        setUser(data.user);
-
-        console.log("로그인 성공:", data);
-        navigate("/posts");
+        const userData = await data.json();
+        console.log("로그인 성공:", userData);
+        await fetchUser();
+        navigate("/");
       } catch (error) {
         console.error("로그인 실패:", error.message);
       }

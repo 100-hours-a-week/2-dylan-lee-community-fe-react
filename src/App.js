@@ -1,13 +1,15 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HomeRedirect } from "./utils/route";
 import Header from "./components/Header";
+import { useSession } from "./context/SessionContext";
 import "./styles/Common.css";
 
 // 페이지 컴포넌트를 동적으로 import
 const routes = [
   {
     path: "/",
-    component: lazy(() => import("./pages/Login")),
+    component: HomeRedirect,
   },
   {
     path: "/login",
@@ -55,6 +57,12 @@ const routes = [
 ];
 
 const App = () => {
+  const { loading } = useSession();
+
+  if (loading) {
+    return <div>로딩 중...</div>; // 사용자 데이터 로딩 시 화면 표시
+  }
+
   return (
     <Router>
       <Header />

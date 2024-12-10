@@ -7,6 +7,7 @@ import "../styles/Post.css";
 const Post = () => {
   const { postId } = useParams(); // URL 파라미터에서 postId 추출
   const [post, setPost] = useState(null);
+  const [commentsCount, setCommentsCount] = useState(0); // 댓글 수 상태 추가
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const Post = () => {
 
         const postData = await response.json();
         setPost(postData);
+        setCommentsCount(postData.comments_count); // 댓글 수 업데이트
       } catch (error) {
         console.error("포스트 Fetch 에러:", error);
       } finally {
@@ -37,6 +39,21 @@ const Post = () => {
 
     fetchPost();
   }, [postId]);
+
+  // 댓글 수 갱신 함수
+  const fetchCommentsCount = async () => {
+    try {
+      const response = await fetch(`/api/v1/posts/${postId}/comment-count`);
+      if (!response.ok) {
+        throw new Error("댓글 수 가져오기 실패");
+      }
+      const { count } = await response.json();
+      console.log(count);
+      setCommentsCount(count);
+    } catch (error) {
+      console.error("댓글 수 갱신 실패:", error.message);
+    }
+  };
 
   if (loading) {
     return <div className="default-container">Loading...</div>;
@@ -49,7 +66,7 @@ const Post = () => {
   return (
     <div className="default-container">
       <PostContainer {...post} />
-      <CommentContainer postId={postId} />
+      <CommentContainer postId={postId} onCommentUpdated={fetchCommentsCount} />
     </div>
   );
 };

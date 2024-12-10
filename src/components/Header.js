@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 import { useSession } from "../context/SessionContext";
-import { apiRequest } from "../utils/apiClient";
 
 const Header = () => {
-  const { user } = useSession();
+  const { setUser, user, loading } = useSession();
   console.log("user:", user);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isBackButtonVisible, setIsBackButtonVisible] = useState(true);
@@ -24,10 +23,14 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       // 서버에 로그아웃 요청
-      const data = await apiRequest("/auth/logout", {
+      const data = await fetch("/api/v1/auth/logout", {
         method: "DELETE",
       });
+      if (!data.ok) {
+        throw new Error("로그아웃 실패");
+      }
       console.log("로그아웃 성공:", data);
+      setUser(null);
       navigate("/"); // 로그인 페이지로 이동
     } catch (error) {
       console.error("로그아웃 실패:", error.message);
@@ -76,6 +79,22 @@ const Header = () => {
     };
   }, []);
 
+  // 접근 제어
+  useEffect(() => {
+    const excludePaths = ["/login", "/signup"];
+    if (!loading) {
+      if (excludePaths.includes(location.pathname) && user) {
+        navigate("/posts");
+      } else if (!excludePaths.includes(location.pathname) && !user) {
+        navigate("/login");
+      }
+    }
+  }, [location.pathname, navigate, user, loading]);
+
+  if (loading) {
+    return <div id="header">로딩중...</div>;
+  }
+
   return (
     <div id="header">
       <h1 className="title-box">
@@ -85,17 +104,16 @@ const Header = () => {
             onClick={handleBackButtonClick}
           ></button>
         )}
-        <span className="header-title">아무 말 대잔치</span>
+        <div className="header-title" onClick={() => navigate("/")}>
+          아무 말 대잔치
+        </div>
+
         {user ? (
           <div
             className="profile-circle absolute-title-right header-profile"
             onClick={toggleDropdown}
           >
-            <img
-              src={profileImageUrl()}
-              alt="프로필 이미지"
-              className="profile-image"
-            />
+            <img src={profileImageUrl()} alt="프로필 이미지" />
           </div>
         ) : null}
         {dropdownVisible && (

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AuthForm.css";
 import Button from "./Buttons";
-import { apiRequest } from "../utils/apiClient";
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -144,14 +143,17 @@ const SignupForm = () => {
         }
 
         // 서버에 회원가입 요청
-        const data = await apiRequest("/auth/signup", {
+        const data = await fetch("/api/v1/auth/signup", {
           method: "POST",
-          body: {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             email,
             password,
             nickname,
             profileImagePath: profileImageUrl,
-          },
+          }),
         });
 
         console.log("회원가입 성공:", data);

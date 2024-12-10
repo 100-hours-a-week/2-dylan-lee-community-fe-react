@@ -19,7 +19,12 @@ const PostBox = ({ post }) => {
         </div>
       </div>
       <div className="author-container padding">
-        <div className="profile-circle"></div>
+        <div className="profile-circle">
+          <img
+            src={`http://localhost:8000/api/v1/upload/${post.profile_image}`}
+            alt="프로필 이미지"
+          />
+        </div>
         <span className="author-name">{post.author}</span>
       </div>
     </div>

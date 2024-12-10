@@ -8,7 +8,12 @@ const CommentBox = ({ comment, onEditClick, onDeleteClick }) => {
     <div className="comment-box">
       <div className="post-info">
         <div className="author-container">
-          <div className="profile-circle"></div>
+          <div className="profile-circle">
+            <img
+              src={`http://localhost:8000/api/v1/upload/${comment.profile_image}`}
+              alt="프로필 이미지"
+            />
+          </div>
           <span className="author-name">{comment.author}</span>
           <div className="post-date">{formatDate(comment.created_at)}</div>
         </div>
