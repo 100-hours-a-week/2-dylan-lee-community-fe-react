@@ -4,7 +4,7 @@ import Button from "./Buttons";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 
-const LoginForm = () => {
+const LoginForm = ({ onFailure }) => {
   const navigate = useNavigate();
   const { setUser, fetchUser } = useSession();
 
@@ -82,6 +82,7 @@ const LoginForm = () => {
         await fetchUser();
         navigate("/");
       } catch (error) {
+        onFailure();
         console.error("로그인 실패:", error.message);
       }
     }

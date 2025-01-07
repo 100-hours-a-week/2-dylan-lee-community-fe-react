@@ -1,5 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "material-react-toastify";
+import "material-react-toastify/dist/ReactToastify.css";
 import { HomeRedirect } from "./utils/route";
 import Header from "./components/Header";
 import { useSession } from "./context/SessionContext";
@@ -66,6 +68,19 @@ const App = () => {
   return (
     <Router>
       <Header />
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       <Suspense fallback={<div className="loading-spinner">로딩 중...</div>}>
         <Routes>
           {routes.map(({ path, component: Component }) => (
