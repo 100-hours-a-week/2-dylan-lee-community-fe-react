@@ -5,7 +5,7 @@ import Toast from "./Toast";
 import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
 
-const ProfileEditForm = ({ onFailure }) => {
+const ProfileEditForm = ({ onSuccess, onFailure }) => {
   const { user } = useSession();
   const [profileImage, setProfileImage] = useState(""); // 업로드 이미지 URL
   const [selectedImage, setSelectedImage] = useState(null); // 선택한 이미지 파일
@@ -114,6 +114,7 @@ const ProfileEditForm = ({ onFailure }) => {
       }
 
       const updatedUser = await sessionUpdateResponse.json();
+      onSuccess();
       console.log("세션 갱신 성공:", updatedUser);
 
       setToastMessage("수정 완료");
