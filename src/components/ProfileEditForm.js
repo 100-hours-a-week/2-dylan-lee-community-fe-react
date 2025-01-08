@@ -5,7 +5,7 @@ import Toast from "./Toast";
 import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
 
-const ProfileEditForm = () => {
+const ProfileEditForm = ({ onFailure }) => {
   const { user } = useSession();
   const [profileImage, setProfileImage] = useState(""); // 업로드 이미지 URL
   const [selectedImage, setSelectedImage] = useState(null); // 선택한 이미지 파일
@@ -118,6 +118,7 @@ const ProfileEditForm = () => {
 
       setToastMessage("수정 완료");
     } catch (error) {
+      onFailure();
       console.error("프로필 수정 실패:", error.message);
     } finally {
       setLoading(false); // 로딩 종료
