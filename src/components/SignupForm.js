@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/AuthForm.css";
 import Button from "./Buttons";
+import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 
 const SignupForm = ({ onFailure }) => {
   const navigate = useNavigate();
@@ -25,20 +26,13 @@ const SignupForm = ({ onFailure }) => {
     const file = e.target.files[0];
     if (file) {
       // 검증 로직
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-      ]; // 허용 MIME 타입
 
-      if (file.size > maxSize) {
+      if (file.size > MAX_FILE_SIZE) {
         onFailure("이미지 크기는 5MB를 넘을 수 없습니다.");
         return;
       }
 
-      if (!allowedTypes.includes(file.type)) {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         onFailure("지원하지 않는 이미지 형식입니다.");
         return;
       }

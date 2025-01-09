@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/PostForm.css";
 import Button from "./Buttons";
+import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 
 const PostEditForm = ({ postId }) => {
   const navigate = useNavigate();
@@ -44,14 +45,11 @@ const PostEditForm = ({ postId }) => {
     const file = e.target.files[0];
     if (file) {
       // 검증 로직
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-
-      if (file.size > maxSize) {
+      if (file.size > MAX_FILE_SIZE) {
         throw new Error("파일 크기는 5MB를 넘을 수 없습니다.");
       }
 
-      if (!allowedTypes.includes(file.type)) {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         throw new Error("이미지 파일만 업로드할 수 있습니다.");
       }
     }
