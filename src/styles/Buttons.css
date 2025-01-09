@@ -91,3 +91,7 @@ button.btn-valid {
 
 .button-base {
 }
+
+.active {
+  background-color: #7f6aee;
+}
