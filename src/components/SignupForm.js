@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/AuthForm.css";
 import Button from "./Buttons";
 
-const SignupForm = () => {
+const SignupForm = ({ onFailure }) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -26,14 +26,21 @@ const SignupForm = () => {
     if (file) {
       // 검증 로직
       const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"]; // 허용 MIME 타입
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ]; // 허용 MIME 타입
 
       if (file.size > maxSize) {
-        throw new Error("파일 크기는 5MB를 넘을 수 없습니다.");
+        onFailure("이미지 크기는 5MB를 넘을 수 없습니다.");
+        return;
       }
 
       if (!allowedTypes.includes(file.type)) {
-        throw new Error("이미지 파일만 업로드할 수 있습니다.");
+        onFailure("지원하지 않는 이미지 형식입니다.");
+        return;
       }
 
       setSelectedImage(URL.createObjectURL(file));
@@ -135,15 +142,16 @@ const SignupForm = () => {
             credentials: "include",
           });
           if (!response.ok) {
-            throw new Error("이미지 업로드 실패");
+            const errorData = await response.json();
+            throw new Error(errorData.message || "이미지 업로드 실패");
           }
-          const data = await response.json();
-          profileImageUrl = data.url;
+          const uploadData = await response.json();
+          profileImageUrl = uploadData.url;
           console.log("이미지 업로드 성공:", profileImageUrl);
         }
 
         // 서버에 회원가입 요청
-        const data = await fetch("/api/v1/auth/signup", {
+        const response = await fetch("/api/v1/auth/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -156,11 +164,18 @@ const SignupForm = () => {
           }),
         });
 
-        console.log("회원가입 성공:", data);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "회원가입 실패");
+        }
+
+        const userData = await response.json();
+        console.log("회원가입 성공:", userData);
         navigate("/posts"); // posts 페이지로 이동
         window.location.reload();
       } catch (error) {
         console.error("회원가입 실패:", error.message);
+        onFailure(error.message);
       }
     }
   };

@@ -17,13 +17,15 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
     setLoading(true);
     try {
       const response = await fetch(`/api/v1/posts/${postId}/comments`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch comments");
+      if (response.ok) {
+        const data = await response.json();
+        console.log("fetchComments data:", data);
+        setComments(data);
+      } else {
+        console.error("댓글 가져오기 실패");
       }
-      const data = await response.json();
-      setComments(data);
     } catch (error) {
-      console.error("Error fetching comments:", error.message);
+      console.error("댓글 가져오기 에러:", error.message);
     } finally {
       setLoading(false);
     }
@@ -54,11 +56,12 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
           method: "DELETE",
         }
       );
-      if (!response.ok) {
-        throw new Error("댓글 삭제 실패");
+      if (response.ok) {
+        await fetchComments();
+        console.log("댓글 삭제 성공");
+      } else {
+        console.error("댓글 삭제 실패");
       }
-      console.log("댓글 삭제 성공");
-      await fetchComments();
     } catch (error) {
       console.error("댓글 삭제 실패:", error.message);
     } finally {
@@ -97,12 +100,15 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
             }),
           }
         );
-        if (!response.ok) {
-          throw new Error("댓글 수정 실패");
+        if (response.ok) {
+          setCommentText("");
+          setIsEditing(false);
+          setEditId(null);
+          fetchComments();
+          console.log("댓글 수정 성공");
+        } else {
+          console.error("댓글 수정 실패");
         }
-
-        setIsEditing(false);
-        setEditId(null);
       } catch (error) {
         console.error("댓글 수정 실패:", error.message);
       }
@@ -118,15 +124,19 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
             content: commentText,
           }),
         });
-        if (!response.ok) {
-          throw new Error("댓글 등록 실패");
+        if (response.ok) {
+          const updatedComments = await response.json();
+          console.log("updatedComments:", updatedComments);
+          await setComments(updatedComments.comments);
+          setCommentText("");
+          console.log("댓글 등록 성공");
+        } else {
+          console.error("댓글 등록 실패");
         }
       } catch (error) {
         console.error("댓글 등록 실패:", error.message);
       }
     }
-    await fetchComments();
-    setCommentText("");
     onCommentUpdated();
   };
 

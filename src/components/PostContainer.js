@@ -90,7 +90,7 @@ const PostContainer = (post) => {
       });
 
       if (!response.ok) {
-        throw new Error("좋아요 처리 실패");
+        console.error("좋아요 처리 실패");
       }
 
       const { isLike: updatedIsLike, likes: updatedLikes } =
@@ -157,6 +157,7 @@ const PostContainer = (post) => {
           type="reaction"
           size="base"
           id="likes"
+          className={isLike ? "active" : ""}
           onClick={handleLike}
           disabled={loading || isLike === null} // 로딩 중 또는 초기화 중에는 버튼 비활성화
         >
