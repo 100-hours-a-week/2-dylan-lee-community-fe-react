@@ -10,10 +10,12 @@ const PostEditForm = ({ postId }) => {
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [originalImage, setOriginalImage] = useState(null);
   const [helperText, setHelperText] = useState("");
 
   useEffect(() => {
     if (postId) {
+      console.log("selectedImage:", selectedImage);
       const fetchPostData = async () => {
         try {
           const response = await fetch(`/api/v1/posts/${postId}`, {
@@ -30,32 +32,48 @@ const PostEditForm = ({ postId }) => {
           const postData = await response.json();
           setTitle(postData.title);
           setContent(postData.content);
-          if (postData.image) {
-            setImage(postData.image);
+          if (postData.image_path) {
+            const imageUrl = `http://localhost:8000/api/v1/upload/${postData.image_path}`;
+            setSelectedImage(imageUrl);
+            setOriginalImage(imageUrl);
           }
         } catch (error) {
           console.error("포스트 Fetch 에러:", error.message);
         }
       };
       fetchPostData();
+    } else {
+      setTitle("");
+      setContent("");
+      setSelectedImage(null);
+      setOriginalImage(null);
     }
   }, [postId]);
+
+  useEffect(() => {
+    if (selectedImage) {
+      console.log("이미지 경로", selectedImage);
+    }
+  }, [selectedImage]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 검증 로직
-      if (file.size > MAX_FILE_SIZE) {
-        throw new Error("파일 크기는 5MB를 넘을 수 없습니다.");
-      }
+      try {
+        // 검증 로직
+        if (file.size > MAX_FILE_SIZE) {
+          console.error("파일 크기는 5MB 이하여야 합니다.");
+        }
 
-      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-        throw new Error("이미지 파일만 업로드할 수 있습니다.");
+        if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+          console.error("지원하지 않는 이미지 형식입니다.");
+        }
+        setSelectedImage(URL.createObjectURL(file)); // 선택된 이미지 URL
+        setImage(file); // 이미지 파일 선택
+      } catch (error) {
+        console.error(error.message);
       }
     }
-
-    setSelectedImage(URL.createObjectURL(file)); // 선택된 이미지 URL
-    setImage(file); // 이미지 파일 선택
   };
 
   const validateTitle = (value) => {
@@ -78,10 +96,11 @@ const PostEditForm = ({ postId }) => {
       setHelperText("제목과 내용을 모두 입력해주세요.");
     }
 
-    try {
-      let postImageUrl = image;
-      // 이미지가 선택된 경우 추가
-      if (selectedImage) {
+    let postImageUrl = originalImage.split("/").pop(); // 기존 이미지 URL
+    // 이미지 업로드
+    if (image && image !== originalImage) {
+      console.log("이미지 업로드 요청");
+      try {
         const formData = new FormData();
         formData.append("image", image);
 
@@ -90,14 +109,24 @@ const PostEditForm = ({ postId }) => {
           body: formData,
         });
         if (!response.ok) {
-          throw new Error("이미지 업로드 실패");
+          console.error("이미지 업로드 실패");
         }
         const data = await response.json();
         postImageUrl = data.url;
-        console.log("이미지 업로드 성공:", postImageUrl);
+        console.log("이미지 업로드 성공:", data);
+      } catch (error) {
+        console.error("이미지 업로드 실패:", error.message);
       }
+    }
 
-      // 게시물 등록 또는 수정 요청
+    // 게시물 등록 또는 수정 요청
+    try {
+      console.log(
+        "title, content, postImageUrl:",
+        title,
+        content,
+        postImageUrl
+      );
       const method = postId ? "PUT" : "POST";
       const url = postId ? `/api/v1/posts/${postId}` : `/api/v1/posts`;
       const response = await fetch(url, {
@@ -113,10 +142,10 @@ const PostEditForm = ({ postId }) => {
       });
 
       if (!response.ok) {
-        throw new Error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
+        console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
       }
 
-      navigate(`/posts`);
+      navigate(`/post/${postId}`);
     } catch (error) {
       console.error(error.message);
       setHelperText("오류가 발생했습니다. 다시 시도해주세요.");
@@ -163,20 +192,39 @@ const PostEditForm = ({ postId }) => {
         </div>
         <div className="form-group">
           <label htmlFor="image">이미지</label>
-          <input
-            type="file"
-            src={selectedImage}
-            id="post-image"
-            accept="image/*"
-            className="post-image-input"
-            onChange={handleFileChange}
-          />
+          <div className="image-select">
+            <input
+              type="file"
+              id="post-image"
+              accept="image/*"
+              className="post-image-input"
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+            />
+            {selectedImage ? (
+              <div className="image-preview">
+                <img
+                  src={selectedImage}
+                  alt="미리보기 이미지"
+                  className="selected-image-preview"
+                  onClick={() => document.getElementById("post-image").click()} // 미리보기 이미지 클릭 시 파일 선택 인풋 클릭
+                  style={{ cursor: "pointer" }} // 커서 스타일 변경
+                />
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => document.getElementById("post-image").click()}
+              >
+                파일 선택
+              </button>
+            )}
+          </div>
         </div>
         <Button
           type="submit"
           size="post"
           className={title && content ? "btn-valid" : "btn-invalid"}
-          onClick={() => console.log("포스트 제출")}
         >
           {postId ? "수정하기" : "완료"}
         </Button>
