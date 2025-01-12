@@ -37,7 +37,7 @@ const PostContainer = (post) => {
       }
 
       const { isLike } = await response.json();
-      setIsLike(isLike); // 유저의 좋아요 상태 설정
+      setIsLike(isLike.isLike); // 유저의 좋아요 상태 설정
     } catch (error) {
       console.error("좋아요 상태 초기화 실패:", error.message);
     }
