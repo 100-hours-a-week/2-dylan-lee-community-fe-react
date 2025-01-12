@@ -48,6 +48,11 @@ const Header = () => {
   };
 
   const handleBackButtonClick = () => {
+    if (location.pathname.startsWith("/post")) {
+      navigate("/posts");
+      return;
+    }
+    console.log("location:", location.pathname);
     navigate(-1);
   };
 
