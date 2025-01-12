@@ -58,3 +58,17 @@ textarea {
 .padding-topbottom {
   padding: 10px 0;
 }
+
+.image-select {
+  display: flex;
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.selected-image-preview {
+  max-height: 100px; /* 이미지의 최대 높이를 100px로 설정 */
+  width: auto; /* 가로 크기는 자동으로 조정 */
+  display: block;
+  margin: 10px 10px 0 10px;
+}
