@@ -3,7 +3,9 @@ import {
   formatDate,
   formatContentAsParagraphs,
   titleOverflow,
+  profileImageUrl,
 } from "../utils/utils";
+import { useSession } from "../context/SessionContext";
 import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import Modal from "./Modal";
@@ -14,6 +16,7 @@ const PostContainer = (post) => {
   const [likes, setLikes] = useState(post.likes);
   const [commentsCount, setCommentsCount] = useState(post.comments_count);
   const [loading, setLoading] = useState(false);
+  const { user } = useSession();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -112,33 +115,35 @@ const PostContainer = (post) => {
           <div className="author-container">
             <div className="profile-circle">
               <img
-                src={`http://localhost:8000/api/v1/upload/${post.profile_image}`}
+                src={profileImageUrl(post.profile_image)}
                 alt="프로필 이미지"
               />
             </div>
             <span className="author-name">{post.author}</span>
             <div className="post-date">{formatDate(post.created_at)}</div>
           </div>
-          <div className="edit-buttons">
-            <Button
-              type="edit"
-              size="tiny"
-              id="edit-post"
-              onClick={(e) => {
-                navigate("/edit_post/" + post.post_id);
-              }}
-            >
-              수정
-            </Button>
-            <Button
-              type="edit"
-              size="tiny"
-              id="delete-post"
-              onClick={handleOpenModal}
-            >
-              삭제
-            </Button>
-          </div>
+          {user && post.user_id === user.user_id && (
+            <div className="edit-buttons">
+              <Button
+                type="edit"
+                size="tiny"
+                id="edit-post"
+                onClick={(e) => {
+                  navigate("/edit_post/" + post.post_id);
+                }}
+              >
+                수정
+              </Button>
+              <Button
+                type="edit"
+                size="tiny"
+                id="delete-post"
+                onClick={handleOpenModal}
+              >
+                삭제
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <div className="grey-line"></div>

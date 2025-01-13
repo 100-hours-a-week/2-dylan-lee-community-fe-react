@@ -24,6 +24,9 @@ function formatDate(dateString) {
 }
 
 function titleOverflow(title) {
+  if (!title) {
+    return "";
+  }
   if (title.length > 26) {
     return `${title.slice(0, 26)}...`;
   }
@@ -31,6 +34,9 @@ function titleOverflow(title) {
 }
 
 function formatContentAsParagraphs(content, classNames = "") {
+  if (!content) {
+    return []; // content가 undefined인 경우 빈 배열 반환
+  }
   const paragraphs = content.split("\n").map((paragraph, index) => (
     <p key={index} className={classNames}>
       {paragraph}
@@ -45,10 +51,19 @@ function convertTime(date) {
   return utcDate.toISOString(); // ISO 8601 포맷으로 반환
 }
 
+function profileImageUrl(profile_image_path) {
+  if (!profile_image_path) {
+    return `/assets/images/default_profile.jpeg`;
+  }
+  const address = `http://localhost:8000/api/v1/upload/${profile_image_path}`;
+  return address;
+}
+
 export {
   formatCount,
   formatDate,
   titleOverflow,
   formatContentAsParagraphs,
   convertTime,
+  profileImageUrl,
 };

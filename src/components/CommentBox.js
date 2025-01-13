@@ -2,6 +2,7 @@ import React from "react";
 import { formatDate, formatContentAsParagraphs } from "../utils/utils";
 import "../styles/Posts.css";
 import Button from "./Buttons";
+import { profileImageUrl } from "../utils/utils";
 
 const CommentBox = ({ comment, onEditClick, onDeleteClick }) => {
   return (
@@ -10,7 +11,7 @@ const CommentBox = ({ comment, onEditClick, onDeleteClick }) => {
         <div className="author-container">
           <div className="profile-circle">
             <img
-              src={`http://localhost:8000/api/v1/upload/${comment.profile_image}`}
+              src={profileImageUrl(comment.profile_image)}
               alt="프로필 이미지"
             />
           </div>

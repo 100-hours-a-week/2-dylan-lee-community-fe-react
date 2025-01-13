@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 import { useSession } from "../context/SessionContext";
+import { profileImageUrl } from "../utils/utils";
 
 const Header = () => {
   const { setUser, user, loading } = useSession();
@@ -11,14 +12,6 @@ const Header = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const profileImageUrl = () => {
-    if (!user) {
-      return null;
-    }
-    console.log("user.profile_image_path:", user.profile_image_path);
-    return `http://localhost:8000/api/v1/upload/${user.profile_image_path}`;
-  };
 
   const handleLogout = async () => {
     try {
@@ -118,7 +111,10 @@ const Header = () => {
             className="profile-circle absolute-title-right header-profile"
             onClick={toggleDropdown}
           >
-            <img src={profileImageUrl()} alt="프로필 이미지" />
+            <img
+              src={profileImageUrl(user.profile_image_path)}
+              alt="프로필 이미지"
+            />
           </div>
         ) : null}
         {dropdownVisible && (
