@@ -4,11 +4,13 @@ import "../styles/EditForm.css";
 import Toast from "./Toast";
 import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
+import { profileImageUrl } from "../utils/utils";
 
 const ProfileEditForm = ({ onSuccess, onFailure }) => {
   const { user } = useSession();
   const [profileImage, setProfileImage] = useState(""); // 업로드 이미지 URL
   const [selectedImage, setSelectedImage] = useState(null); // 선택한 이미지 파일
+  const [originalImage, setOriginalImage] = useState(null); // 기존 이미지 URL
   const [email, setEmail] = useState(""); // 이메일
   const [nickname, setNickname] = useState("");
   const [nicknameHelper, setNicknameHelper] = useState("");
@@ -17,13 +19,15 @@ const ProfileEditForm = ({ onSuccess, onFailure }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let profileImagePath = "";
     if (user && user.profile_image_path) {
-      setProfileImage(
-        `http://localhost:8000/api/v1/upload/${user.profile_image_path}`
-      );
-      setEmail(user.email);
-      setNickname(user.nickname);
+      profileImagePath = profileImageUrl(user.profile_image_path);
     }
+    setProfileImage(profileImagePath);
+    setEmail(user.email);
+    setNickname(user.nickname);
+    setOriginalImage(profileImagePath);
+    // console.log("profileImage:", profileImage);
   }, [user]);
 
   if (!user) {
@@ -40,6 +44,11 @@ const ProfileEditForm = ({ onSuccess, onFailure }) => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleImageDelete = () => {
+    setSelectedImage(null);
+    setProfileImage("");
   };
 
   const validateNickname = (value) => {
@@ -66,7 +75,7 @@ const ProfileEditForm = ({ onSuccess, onFailure }) => {
 
     try {
       let profileImageUrl = user.profile_image_path;
-
+      console.log(profileImageUrl);
       // 이미지 업로드
       if (selectedImage) {
         const formData = new FormData();
@@ -163,7 +172,7 @@ const ProfileEditForm = ({ onSuccess, onFailure }) => {
       <form className="edit-form center" onSubmit={handleSubmit}>
         <div className="title">회원정보수정</div>
         <div className="form-group">
-          <label>프로필 사진*</label>
+          <label>프로필 사진</label>
           <div className="helper-text" id="image-message"></div>
           <label
             htmlFor="profile-image-input"
@@ -179,7 +188,6 @@ const ProfileEditForm = ({ onSuccess, onFailure }) => {
               <div className="profile-placeholder">+</div>
             )}
           </label>
-
           <input
             type="file"
             id="profile-image-input"
@@ -187,6 +195,11 @@ const ProfileEditForm = ({ onSuccess, onFailure }) => {
             style={{ display: "none" }}
             onChange={handleImageUpload}
           />
+          {profileImage ? (
+            <button type="button" onClick={handleImageDelete}>
+              삭제
+            </button>
+          ) : null}
         </div>
         <label htmlFor="email">이메일</label>
         <p>{email}</p>
