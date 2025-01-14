@@ -47,7 +47,6 @@ function formatContentAsParagraphs(content, classNames = "") {
 
 function convertTime(date) {
   const utcDate = new Date(date);
-  utcDate.setHours(utcDate.getHours() + 9); // 시간차 계산
   return utcDate.toISOString(); // ISO 8601 포맷으로 반환
 }
 
