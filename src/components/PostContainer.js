@@ -76,10 +76,23 @@ const PostContainer = (post) => {
     console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     console.log("확인 버튼 클릭");
-    setShowModal(false); // 모달 닫기
-    // API 호출
+    try {
+      const response = await fetch(`/api/v1/posts/${post.post_id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        console.log("게시글 삭제 성공");
+        navigate("/");
+      } else {
+        console.error("게시글 삭제 실패");
+      }
+    } catch (error) {
+      console.error("게시글 삭제 실패:", error.message);
+    } finally {
+      handleCloseModal();
+    }
   };
 
   const handleLike = async () => {
