@@ -118,7 +118,7 @@ const Posts = () => {
           <PostBox key={post.post_id} post={post} />
         ))}
         {loading && <p>Loading...</p>}
-        {!hasMore && <p>모든 데이터를 불러왔습니다.</p>}
+        {!hasMore && <p>모든 포스트를 불러왔습니다.</p>}
       </div>
     </div>
   );
