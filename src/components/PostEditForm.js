@@ -15,7 +15,6 @@ const PostEditForm = ({ postId }) => {
 
   useEffect(() => {
     if (postId) {
-      console.log("selectedImage:", selectedImage);
       const fetchPostData = async () => {
         try {
           const response = await fetch(`/api/v1/posts/${postId}`, {
@@ -49,12 +48,6 @@ const PostEditForm = ({ postId }) => {
       setOriginalImage(null);
     }
   }, [postId]);
-
-  useEffect(() => {
-    if (selectedImage) {
-      console.log("이미지 경로", selectedImage);
-    }
-  }, [selectedImage]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -96,7 +89,8 @@ const PostEditForm = ({ postId }) => {
       setHelperText("제목과 내용을 모두 입력해주세요.");
     }
 
-    let postImageUrl = originalImage.split("/").pop(); // 기존 이미지 URL
+    let postImageUrl = originalImage ? originalImage.split("/").pop() : null;
+
     // 이미지 업로드
     if (image && image !== originalImage) {
       console.log("이미지 업로드 요청");
@@ -145,7 +139,9 @@ const PostEditForm = ({ postId }) => {
         console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
       }
 
-      navigate(`/post/${postId}`);
+      const responseData = await response.json();
+      const newPostId = responseData.post_id.post_id || postId;
+      navigate(`/post/${newPostId}`);
     } catch (error) {
       console.error(error.message);
       setHelperText("오류가 발생했습니다. 다시 시도해주세요.");
