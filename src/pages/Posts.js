@@ -34,7 +34,7 @@ const Posts = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch posts: ${response.statusText}`);
+        throw new Error(`포스트 로드 에러: ${response.statusText}`);
       }
 
       const newPosts = await response.json();
