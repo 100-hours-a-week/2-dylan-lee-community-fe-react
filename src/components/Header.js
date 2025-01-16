@@ -95,16 +95,14 @@ const Header = () => {
 
   return (
     <div id="header">
-      <h1 className="title-box">
+      <div className="title-box">
         {isBackButtonVisible && (
           <button
             className="back-button absolute-title-left"
             onClick={handleBackButtonClick}
           ></button>
         )}
-        <div className="header-title" onClick={() => navigate("/")}>
-          아무 말 대잔치
-        </div>
+        <div className="logo" onClick={() => navigate("/")}></div>
 
         {user ? (
           <div
@@ -131,7 +129,7 @@ const Header = () => {
             </ul>
           </div>
         )}
-      </h1>
+      </div>
     </div>
   );
 };

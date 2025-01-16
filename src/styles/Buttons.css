@@ -6,16 +6,17 @@
   border: none;
   transition: all 0.3s ease-in-out;
   margin: 2px;
+  color: #0b1215;
 }
 
 /* 기본 스타일 */
 button.btn-invalid {
-  background-color: #aca0eb;
+  background-color: #fffaec;
 }
 
 /* 유효할 때 */
 button.btn-valid {
-  background-color: #7f6aee;
+  background-color: #f5ecd5;
 }
 
 /* 타입별 스타일 */
@@ -23,7 +24,6 @@ button.btn-valid {
   padding: 10px 25px;
   background-color: #aca0eb;
   font-size: 14px;
-  color: white;
   border-radius: 8px;
 }
 
@@ -36,9 +36,9 @@ button.btn-valid {
 }
 
 .button-ghost {
-  padding: 3px;
+  padding: 4px;
   background-color: transparent;
-  color: #000;
+  color: #eeeeee;
   font-size: 14px;
   font-weight: 400;
   text-align: center;

@@ -1,0 +1,64 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100%;
+}
+
+.left-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.right-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container {
+  width: 70%; /* 로그인 컨테이너의 너비 */
+  max-width: 400px; /* 최대 너비 */
+  height: 80%;
+  border-radius: 8px;
+  padding: 2rem; /* 패딩을 추가하여 중앙 정렬 보정 */
+  background-color: #292c33;
+  box-sizing: border-box; /* 패딩을 포함하여 크기 계산 */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* 화면 크기가 768px 미만일 때 레이아웃 변경 */
+@media (max-width: 950px) {
+  .container {
+    flex-direction: row;
+  }
+
+  .left-side {
+    display: none; /* 왼쪽 영역 숨기기 */
+  }
+
+  .right-side {
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    width: 80%; /* 중앙에 위치한 로그인 컨테이너의 너비 */
+  }
+}

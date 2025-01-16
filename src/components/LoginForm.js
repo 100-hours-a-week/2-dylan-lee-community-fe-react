@@ -89,7 +89,7 @@ const LoginForm = ({ onFailure }) => {
   };
 
   return (
-    <form className="auth-form login-form" onSubmit={handleSubmit}>
+    <form className="login-form" onSubmit={handleSubmit}>
       <div className="title">로그인</div>
       <div className="form-group">
         <label htmlFor="email">이메일</label>
