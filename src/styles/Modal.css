@@ -22,29 +22,30 @@
 }
 
 .modal-content {
-  background-color: #ffffff;
-  padding: 20px;
+  background-color: #f5ecd5;
+  color: #3d3d3d;
+  padding: 30px;
   border-radius: 12px;
-  width: 400px;
-  height: 240px;
+  width: 360px;
+  height: 200px;
   text-align: center;
 }
 
 .modal-content > #title {
-  font-size: 24px;
+  font-size: 1.4rem;
   font-weight: 700;
   margin: 30px 0;
 }
 
 .modal-content > p {
-  font-size: 20px;
+  font-size: 1.2rem;
   margin: 15px 0;
 }
 
 .modal-actions > button {
-  margin: 10px 8px;
+  margin: 10px 12px;
   padding: 10px 20px;
-  font-size: 20px;
+  font-size: 1.1rem;
   cursor: pointer;
   border: none;
   border-radius: 12px;
@@ -52,11 +53,11 @@
 }
 
 #confirm-action {
-  background-color: #c4a5fa;
+  background-color: #578e7e;
   color: #242424;
 }
 
 #cancel-action {
-  background-color: #242424;
+  background-color: #3d3d3d;
   color: #ffffff;
 }

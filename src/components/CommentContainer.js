@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "./Buttons";
 import CommentBox from "../components/CommentBox";
 import Modal from "./Modal";
+import { convertTime } from "../utils/utils";
 
 const CommentContainer = ({ postId, onCommentUpdated }) => {
   const [showModal, setShowModal] = useState(false);
@@ -10,28 +11,109 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
   const [comments, setComments] = useState([]); // 댓글 리스트
   const [isEditing, setIsEditing] = useState(false); // 수정 상태
   const [editId, setEditId] = useState(null); // 수정 중인 댓글 ID
+  const [firstCreatedAt, setFirstCreatedAt] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const limit = 100;
+
+  let isFetching = false;
 
   // 댓글 데이터 가져오기
   const fetchComments = async () => {
+    if (isFetching || !hasMore) return;
+    isFetching = true;
     setLoading(true);
+    console.log("댓글 가져오기 시작");
+
     try {
-      const response = await fetch(`/api/v1/posts/${postId}/comments`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch comments");
+      const params = firstCreatedAt
+        ? `firstCreatedAt=${convertTime(firstCreatedAt)}`
+        : "";
+
+      const url = `/api/v1/posts/${postId}/comments?${params}&limit=${limit}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
+        throw new Error(`코멘트 로드 에러: ${response.statusText}`);
       }
-      const data = await response.json();
-      setComments(data);
+
+      const newComments = await response.json();
+      console.log(newComments);
+
+      setComments((prevComments) => {
+        const uniqueComments = [
+          ...prevComments,
+          ...newComments.filter(
+            (newComment) =>
+              !prevComments.some(
+                (prevComment) =>
+                  prevComment.created_at === newComment.created_at
+              )
+          ),
+        ];
+        uniqueComments.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+        return uniqueComments;
+      });
+
+      if (newComments.length < limit) {
+        setHasMore(false);
+      }
+
+      if (newComments.length > 0) {
+        const latestComment = newComments.reduce((latest, comment) =>
+          new Date(comment.created_at) > new Date(latest.created_at)
+            ? comment
+            : latest
+        );
+        console.log("가장 오래된 댓글:", latestComment);
+        setFirstCreatedAt(latestComment.created_at);
+      }
     } catch (error) {
-      console.error("Error fetching comments:", error.message);
+      console.error("댓글 가져오기 에러:", error.message);
     } finally {
       setLoading(false);
+      isFetching = false;
     }
   };
 
   useEffect(() => {
     fetchComments();
   }, [postId]);
+
+  useEffect(() => {
+    let timer;
+    const handleScroll = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (
+          hasMore &&
+          window.innerHeight + window.scrollY >=
+            document.body.offsetHeight - 100
+        ) {
+          if (!loading) {
+            fetchComments();
+          }
+        }
+      }, 300); // 300ms 디바운싱
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, firstCreatedAt, hasMore]);
 
   const handleOpenModal = (commentId) => {
     setSelectedCommentId(commentId);
@@ -54,11 +136,16 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
           method: "DELETE",
         }
       );
-      if (!response.ok) {
-        throw new Error("댓글 삭제 실패");
+      if (response.ok) {
+        const updatedComment = await response.json();
+        const sortedComments = updatedComment.comments.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+        setComments(sortedComments);
+        console.log("댓글 삭제 성공");
+      } else {
+        console.error("댓글 삭제 실패");
       }
-      console.log("댓글 삭제 성공");
-      await fetchComments();
     } catch (error) {
       console.error("댓글 삭제 실패:", error.message);
     } finally {
@@ -97,12 +184,20 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
             }),
           }
         );
-        if (!response.ok) {
-          throw new Error("댓글 수정 실패");
+        if (response.ok) {
+          setCommentText("");
+          setIsEditing(false);
+          setEditId(null);
+          const updatedComment = await response.json();
+          const sortedComments = updatedComment.comments.sort(
+            (a, b) => new Date(a.created_at) - new Date(b.created_at)
+          );
+          setComments(sortedComments);
+          fetchComments();
+          console.log("댓글 수정 성공");
+        } else {
+          console.error("댓글 수정 실패");
         }
-
-        setIsEditing(false);
-        setEditId(null);
       } catch (error) {
         console.error("댓글 수정 실패:", error.message);
       }
@@ -118,15 +213,21 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
             content: commentText,
           }),
         });
-        if (!response.ok) {
-          throw new Error("댓글 등록 실패");
+        if (response.ok) {
+          const updatedComment = await response.json();
+          const sortedComments = updatedComment.comments.sort(
+            (a, b) => new Date(a.created_at) - new Date(b.created_at)
+          );
+          setComments(sortedComments);
+          setCommentText("");
+          console.log("댓글 등록 성공");
+        } else {
+          console.error("댓글 등록 실패");
         }
       } catch (error) {
         console.error("댓글 등록 실패:", error.message);
       }
     }
-    await fetchComments();
-    setCommentText("");
     onCommentUpdated();
   };
 

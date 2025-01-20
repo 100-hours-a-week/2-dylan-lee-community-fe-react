@@ -1,0 +1,142 @@
+.auth-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: stretch;
+  height: 100%;
+  width: 100%;
+}
+
+.left-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.right-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container,
+.signup-container {
+  display: flex;
+  width: 70%; /* 로그인 컨테이너의 너비 */
+  max-width: 400px; /* 최대 너비 */
+  min-height: 25rem;
+  max-height: 25rem;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 8px;
+  padding: 2rem; /* 패딩을 추가하여 중앙 정렬 보정 */
+  background-color: #292c33;
+  box-sizing: border-box; /* 패딩을 포함하여 크기 계산 */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.signup-form-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* 세로 중앙 정렬 */
+  width: 100%;
+  height: 100%;
+}
+
+.prev-button,
+.next-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: rgba(124, 124, 124, 0.5);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0.4s ease;
+  width: 3rem;
+  height: 3rem;
+  background-size: contain; /* 이미지 크기 조정 */
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+}
+
+.signup-form-wrapper:hover .prev-button,
+.signup-form-wrapper:hover .next-button {
+  opacity: 1;
+  visibility: visible;
+}
+
+.prev-button {
+  left: -3.75rem; /* 박스 왼쪽에 위치 */
+  background-image: url("/public/assets/images/arrow_forward.png");
+  transform: scaleX(-1);
+  top: 43%;
+}
+
+.next-button {
+  right: -3.75rem; /* 박스 오른쪽에 위치 */
+  background-image: url("/public/assets/images/arrow_forward.png");
+}
+
+/* 화면 크기가 768px 미만일 때 레이아웃 변경 */
+@media (max-width: 950px) {
+  .auth-container {
+    flex-direction: row;
+  }
+
+  .left-side {
+    display: none; /* 왼쪽 영역 숨기기 */
+  }
+
+  .right-side {
+    flex: none;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    width: 80%; /* 중앙에 위치한 로그인 컨테이너의 너비 */
+  }
+}
+
+.typewriter-title {
+  font-size: 2rem;
+}
+
+.typewriter-cursor {
+  font-size: 2rem;
+  animation: Typewriter-cursor 1s infinite;
+  margin-left: 1px;
+}
+
+.cursor-effect {
+  animation: Typewriter-cursor 1s infinite;
+}

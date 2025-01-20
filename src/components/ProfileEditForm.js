@@ -1,29 +1,31 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Buttons";
 import "../styles/EditForm.css";
-import Toast from "./Toast";
 import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
+import { profileImageUrl } from "../utils/utils";
 
-const ProfileEditForm = () => {
+const ProfileEditForm = ({ onChange }) => {
   const { user } = useSession();
   const [profileImage, setProfileImage] = useState(""); // 업로드 이미지 URL
   const [selectedImage, setSelectedImage] = useState(null); // 선택한 이미지 파일
+  const [originalImage, setOriginalImage] = useState(null); // 기존 이미지 URL
   const [email, setEmail] = useState(""); // 이메일
   const [nickname, setNickname] = useState("");
   const [nicknameHelper, setNicknameHelper] = useState("");
-  const [toastMessage, setToastMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let profileImagePath = "";
     if (user && user.profile_image_path) {
-      setProfileImage(
-        `http://localhost:8000/api/v1/upload/${user.profile_image_path}`
-      );
-      setEmail(user.email);
-      setNickname(user.nickname);
+      profileImagePath = profileImageUrl(user.profile_image_path);
     }
+    setProfileImage(profileImagePath);
+    setEmail(user.email);
+    setNickname(user.nickname);
+    setOriginalImage(profileImagePath);
+    // console.log("profileImage:", profileImage);
   }, [user]);
 
   if (!user) {
@@ -40,6 +42,11 @@ const ProfileEditForm = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleImageDelete = () => {
+    setSelectedImage(null);
+    setProfileImage("");
   };
 
   const validateNickname = (value) => {
@@ -66,7 +73,7 @@ const ProfileEditForm = () => {
 
     try {
       let profileImageUrl = user.profile_image_path;
-
+      console.log(profileImageUrl);
       // 이미지 업로드
       if (selectedImage) {
         const formData = new FormData();
@@ -80,9 +87,17 @@ const ProfileEditForm = () => {
             credentials: "include",
           }
         );
-        if (!uploadResponse.ok) {
+
+        if (uploadResponse.status === 401) {
+          console.error("로그인이 필요합니다.");
+          // 페이지 새로고침
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000); // 3초 후 새로고침
+        } else if (!uploadResponse.ok) {
           throw new Error("이미지 업로드 실패");
         }
+
         const uploadData = await uploadResponse.json();
         profileImageUrl = uploadData.url;
       }
@@ -109,23 +124,25 @@ const ProfileEditForm = () => {
         credentials: "include",
       });
 
-      if (!sessionUpdateResponse.ok) {
+      if (sessionUpdateResponse.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!sessionUpdateResponse.ok) {
         throw new Error("세션 갱신 실패");
       }
 
       const updatedUser = await sessionUpdateResponse.json();
+      onChange("프로필이 수정되었습니다");
       console.log("세션 갱신 성공:", updatedUser);
-
-      setToastMessage("수정 완료");
     } catch (error) {
       console.error("프로필 수정 실패:", error.message);
+      onChange("프로필 수정에 실패했습니다");
     } finally {
       setLoading(false); // 로딩 종료
     }
-  };
-
-  const handleCloseToast = () => {
-    setToastMessage(""); // 토스트 메시지 제거
   };
 
   const handleOpenModal = () => {
@@ -146,9 +163,16 @@ const ProfileEditForm = () => {
         credentials: "include",
       });
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         throw new Error("회원 탈퇴 실패");
       }
+
       console.log("회원 탈퇴 성공");
       setShowModal(false); // 모달 닫기
     } catch (error) {
@@ -158,10 +182,17 @@ const ProfileEditForm = () => {
 
   return (
     <>
-      <form className="edit-form center" onSubmit={handleSubmit}>
+      <form className="edit-form" onSubmit={handleSubmit}>
         <div className="title">회원정보수정</div>
         <div className="form-group">
-          <label>프로필 사진*</label>
+          <div className="profile-image-label-container">
+            <label>프로필 사진</label>
+            {profileImage ? (
+              <Button type="image-delete" onClick={handleImageDelete}>
+                삭제
+              </Button>
+            ) : null}
+          </div>
           <div className="helper-text" id="image-message"></div>
           <label
             htmlFor="profile-image-input"
@@ -177,7 +208,6 @@ const ProfileEditForm = () => {
               <div className="profile-placeholder">+</div>
             )}
           </label>
-
           <input
             type="file"
             id="profile-image-input"
@@ -186,25 +216,38 @@ const ProfileEditForm = () => {
             onChange={handleImageUpload}
           />
         </div>
-        <label htmlFor="email">이메일</label>
-        <p>{email}</p>
         <div className="form-group">
-          <label htmlFor="nickname">닉네임</label>
-          <input
-            type="text"
-            id="nickname"
-            placeholder="닉네임을 입력하세요"
-            value={nickname}
-            onChange={handleNicknameChange}
-          />
-          <div
-            className={`helper-text ${nicknameHelper ? "show" : ""}`}
-            id="nickname-message"
-          >
-            {nicknameHelper}
+          <div className="g-input">
+            <input
+              type="text"
+              id="email"
+              placeholder=" "
+              value={email}
+              disabled
+            />
+            <label htmlFor="email">이메일</label>
           </div>
         </div>
-        <Button type="submit" size="large">
+        <div className="form-group">
+          <div className="g-input">
+            <input
+              type="text"
+              id="nickname"
+              placeholder=" "
+              value={nickname}
+              onChange={handleNicknameChange}
+            />
+            <label htmlFor="nickname">닉네임</label>
+
+            <div
+              className={`helper-text ${nicknameHelper ? "show" : ""}`}
+              id="nickname-message"
+            >
+              {nicknameHelper}
+            </div>
+          </div>
+        </div>
+        <Button type="comment" size="round">
           수정하기
         </Button>
         <Button
@@ -217,13 +260,6 @@ const ProfileEditForm = () => {
           회원 탈퇴
         </Button>
       </form>
-      {toastMessage && (
-        <Toast
-          message={toastMessage}
-          duration={3000}
-          onClose={handleCloseToast}
-        />
-      )}
       {showModal && (
         <Modal
           isOpen={showModal}

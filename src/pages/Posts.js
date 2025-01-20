@@ -34,7 +34,7 @@ const Posts = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch posts: ${response.statusText}`);
+        throw new Error(`포스트 로드 에러: ${response.statusText}`);
       }
 
       const newPosts = await response.json();
@@ -99,12 +99,7 @@ const Posts = () => {
     <div className="default-container">
       <div className="posts-container">
         <div className="title">
-          <span className="normal-weight">
-            안녕하세요,
-            <br />
-            아무 말 대잔치
-            <strong> 게시판</strong> 입니다.
-          </span>
+          <span className="normal-weight"></span>
         </div>
         <Button
           type="round"
@@ -118,7 +113,7 @@ const Posts = () => {
           <PostBox key={post.post_id} post={post} />
         ))}
         {loading && <p>Loading...</p>}
-        {!hasMore && <p>모든 데이터를 불러왔습니다.</p>}
+        {!hasMore && <p>끝!</p>}
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
 import React from "react";
 import { formatDate, formatCount, titleOverflow } from "../utils/utils";
 import { useNavigate } from "react-router-dom";
+import { profileImageUrl } from "../utils/utils";
 
 const PostBox = ({ post }) => {
   const navigate = useNavigate();
-
   return (
     <div className="post-box" onClick={() => navigate(`/post/${post.post_id}`)}>
       <div className="post-box-header">
@@ -18,12 +18,9 @@ const PostBox = ({ post }) => {
           <div className="post-date">{formatDate(post.created_at)}</div>
         </div>
       </div>
-      <div className="author-container padding">
+      <div className="author-container post-box-padding">
         <div className="profile-circle">
-          <img
-            src={`http://localhost:8000/api/v1/upload/${post.profile_image}`}
-            alt="프로필 이미지"
-          />
+          <img src={profileImageUrl(post.profile_image)} alt="프로필 이미지" />
         </div>
         <span className="author-name">{post.author}</span>
       </div>

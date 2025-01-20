@@ -5,7 +5,7 @@ import "../styles/Buttons.css"; // 버튼 스타일 정의
 
 const Button = ({
   type = "submit", // 기본값 지정
-  size = "large", // 기본값 지정
+  size = "", // 기본값 지정
   children,
   onClick,
   className = "", // 기본값 지정
@@ -26,7 +26,14 @@ const Button = ({
 };
 
 Button.propTypes = {
-  type: PropTypes.oneOf(["submit", "ghost", "round", "edit", "reaction"]),
+  type: PropTypes.oneOf([
+    "submit",
+    "ghost",
+    "round",
+    "edit", // 수정 삭제 버튼
+    "reaction",
+    "image-delete", // 이미지 삭제 버튼
+  ]),
   size: PropTypes.oneOf([
     "tiny",
     "comment",

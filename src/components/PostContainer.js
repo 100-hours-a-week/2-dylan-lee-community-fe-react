@@ -3,7 +3,9 @@ import {
   formatDate,
   formatContentAsParagraphs,
   titleOverflow,
+  profileImageUrl,
 } from "../utils/utils";
+import { useSession } from "../context/SessionContext";
 import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import Modal from "./Modal";
@@ -14,6 +16,7 @@ const PostContainer = (post) => {
   const [likes, setLikes] = useState(post.likes);
   const [commentsCount, setCommentsCount] = useState(post.comments_count);
   const [loading, setLoading] = useState(false);
+  const { user } = useSession();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,12 +35,18 @@ const PostContainer = (post) => {
         }
       );
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         throw new Error("좋아요 상태 가져오기 실패");
       }
 
       const { isLike } = await response.json();
-      setIsLike(isLike); // 유저의 좋아요 상태 설정
+      setIsLike(isLike.isLike); // 유저의 좋아요 상태 설정
     } catch (error) {
       console.error("좋아요 상태 초기화 실패:", error.message);
     }
@@ -52,7 +61,13 @@ const PostContainer = (post) => {
         }
       );
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         throw new Error("댓글 수 가져오기 실패");
       }
 
@@ -73,10 +88,27 @@ const PostContainer = (post) => {
     console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     console.log("확인 버튼 클릭");
-    setShowModal(false); // 모달 닫기
-    // API 호출
+    try {
+      const response = await fetch(`/api/v1/posts/${post.post_id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        console.log("게시글 삭제 성공");
+        navigate("/");
+      } else if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      }
+    } catch (error) {
+      console.error("게시글 삭제 실패:", error.message);
+    } finally {
+      handleCloseModal();
+    }
   };
 
   const handleLike = async () => {
@@ -89,8 +121,14 @@ const PostContainer = (post) => {
         credentials: "include",
       });
 
-      if (!response.ok) {
-        throw new Error("좋아요 처리 실패");
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
+        console.error("좋아요 처리 실패");
       }
 
       const { isLike: updatedIsLike, likes: updatedLikes } =
@@ -112,33 +150,35 @@ const PostContainer = (post) => {
           <div className="author-container">
             <div className="profile-circle">
               <img
-                src={`http://localhost:8000/api/v1/upload/${post.profile_image}`}
+                src={profileImageUrl(post.profile_image)}
                 alt="프로필 이미지"
               />
             </div>
             <span className="author-name">{post.author}</span>
             <div className="post-date">{formatDate(post.created_at)}</div>
           </div>
-          <div className="edit-buttons">
-            <Button
-              type="edit"
-              size="tiny"
-              id="edit-post"
-              onClick={(e) => {
-                navigate("/edit_post/" + post.post_id);
-              }}
-            >
-              수정
-            </Button>
-            <Button
-              type="edit"
-              size="tiny"
-              id="delete-post"
-              onClick={handleOpenModal}
-            >
-              삭제
-            </Button>
-          </div>
+          {user && post.user_id === user.user_id && (
+            <div className="edit-buttons">
+              <Button
+                type="edit"
+                size="tiny"
+                id="edit-post"
+                onClick={(e) => {
+                  navigate("/edit_post/" + post.post_id);
+                }}
+              >
+                수정
+              </Button>
+              <Button
+                type="edit"
+                size="tiny"
+                id="delete-post"
+                onClick={handleOpenModal}
+              >
+                삭제
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       <div className="grey-line"></div>
@@ -157,6 +197,7 @@ const PostContainer = (post) => {
           type="reaction"
           size="base"
           id="likes"
+          className={isLike ? "active" : ""}
           onClick={handleLike}
           disabled={loading || isLike === null} // 로딩 중 또는 초기화 중에는 버튼 비활성화
         >

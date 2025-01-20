@@ -1,3 +1,5 @@
+import useToast from "../components/useToast";
+
 function formatCount(count) {
   if (count >= 100000) {
     return `${(count / 1000).toFixed(0)}k`;
@@ -24,6 +26,9 @@ function formatDate(dateString) {
 }
 
 function titleOverflow(title) {
+  if (!title) {
+    return "";
+  }
   if (title.length > 26) {
     return `${title.slice(0, 26)}...`;
   }
@@ -31,6 +36,9 @@ function titleOverflow(title) {
 }
 
 function formatContentAsParagraphs(content, classNames = "") {
+  if (!content) {
+    return []; // content가 undefined인 경우 빈 배열 반환
+  }
   const paragraphs = content.split("\n").map((paragraph, index) => (
     <p key={index} className={classNames}>
       {paragraph}
@@ -41,9 +49,18 @@ function formatContentAsParagraphs(content, classNames = "") {
 
 function convertTime(date) {
   const utcDate = new Date(date);
-  utcDate.setHours(utcDate.getHours() + 9); // 시간차 계산
   return utcDate.toISOString(); // ISO 8601 포맷으로 반환
 }
+
+function profileImageUrl(profile_image_path) {
+  if (!profile_image_path) {
+    return `/assets/images/default_profile.jpeg`;
+  }
+  const address = `http://localhost:8000/api/v1/upload/${profile_image_path}`;
+  return address;
+}
+
+// function ToastMessage()
 
 export {
   formatCount,
@@ -51,4 +68,5 @@ export {
   titleOverflow,
   formatContentAsParagraphs,
   convertTime,
+  profileImageUrl,
 };

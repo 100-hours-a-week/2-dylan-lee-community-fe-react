@@ -1,16 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+KR:wght@100..900&family=Orbit&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Gothic+A1&display=swap");
 
 body,
 #root {
   margin: 0;
-  background-color: #f4f5f7;
+  background-color: #3d3d3d;
   display: flex;
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Gothic A1", serif;
+  font-weight: 400;
+  color: #eeeeee;
   align-items: center;
-  justify-content: flex-start; /* 수직 및 수평 중앙 정렬 */
+  justify-content: flex-start;
   flex-direction: column;
-  height: 100vh; /* 전체 화면 높이 */
+  height: 100vh;
   width: 100%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 p {
@@ -28,7 +34,6 @@ p {
 }
 
 .title {
-  color: #000000;
   text-align: center;
   font-size: 24px;
   font-weight: 700;
@@ -38,6 +43,7 @@ p {
 .form-group {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   width: 100%;
   margin-bottom: 2px;
@@ -50,39 +56,22 @@ p {
   align-items: center;
 }
 
-label {
-  font-size: 15px;
-  font-weight: bold;
-  padding: 0 0 5px 0;
-  align-self: flex-start;
-}
-
-input {
-  box-sizing: border-box;
-  padding: 8px;
-  width: 100%;
-  border: 1px solid #000000;
-  background-color: transparent;
-  font-size: 14px;
-  border-radius: 4px;
-  margin: 4px 0 4px 0;
-}
-
 .grey-line {
   width: 105%;
-  border: 0.5px solid rgba(0, 0, 0, 0.16);
+  border: 0.5px solid rgba(250, 250, 250, 0.823);
   margin: 10px 0;
 }
 
 /* 헬퍼 메시지 */
 .helper-text {
-  min-height: 18px;
-  font-size: 12px;
-  color: #ff3434;
+  min-height: 15px;
+  font-size: 0.7rem;
+  color: #e5781e;
   align-self: flex-start;
   visibility: hidden; /* 기본적으로 숨김 */
   opacity: 0; /* 기본적으로 보이지 않음 */
-  padding-bottom: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .helper-text.show {
@@ -97,15 +86,15 @@ input {
   gap: 8px;
 }
 
-.padding {
-  padding: 15px 25px;
+.post-box-padding {
+  padding: 20px 25px;
 }
 
 .profile-circle {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #d9d9d9;
+  background-color: #f5ecd5;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -116,6 +105,8 @@ input {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background-size: cover;
+  background-position: center;
 }
 
 .author-name {
@@ -126,6 +117,12 @@ input {
 .edit-buttons {
   display: flex;
   justify-content: flex-end;
+}
+
+label {
+  font-size: 0.85rem;
+  padding: 0 0 5px 5px;
+  align-self: flex-start;
 }
 
 /* 프로필 이미지 업로드 */
@@ -139,7 +136,7 @@ input {
   justify-content: center;
   align-items: center;
   align-self: center;
-  background-color: #c4c4c4;
+  background-color: #f5ecd5;
   cursor: pointer;
   margin: 5px 0 20px 0;
 }
@@ -151,7 +148,7 @@ input {
 }
 
 .profile-placeholder {
-  font-size: 14px;
+  font-size: 16px;
   color: #aaa;
 }
 
@@ -161,7 +158,7 @@ input {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #aca0eb;
+  background-color: #292c33;
   color: white;
   padding: 12px 20px;
   border-radius: 30px;
@@ -180,4 +177,92 @@ input {
   100% {
     opacity: 0;
   }
+}
+
+.g-input {
+  position: relative;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+  display: inline-block;
+  width: 100%;
+}
+
+.g-input label {
+  background: #292c33;
+  padding: 3px;
+  font-size: 0.8rem;
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: bottom left;
+  color: #ddd;
+  font-family: arial;
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  z-index: 1;
+  cursor: text;
+}
+
+.g-input input {
+  border: 1px solid #3d3d3d;
+  background-color: #292c33;
+  color: #eeeeee;
+  display: block;
+  padding: 10px;
+  border-radius: 3px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.g-input.fill {
+  display: block;
+  width: 100%;
+}
+
+.g-input input:focus {
+  outline: 0;
+  border-color: #578e7e;
+}
+
+.g-input input:focus + label,
+.g-input input:not(:placeholder-shown) + label {
+  transform: translateX(-3px) translateY(-15px);
+  font-size: 10px;
+  color: #578e7e;
+}
+
+/* input {
+  box-sizing: border-box;
+  padding: 8px;
+  width: 100%;
+  border: none;
+  background-color: #eeeeee;
+  color: #eeeeee;
+  font-size: 14px;
+  border-radius: 4px;
+  margin: 4px 0 4px 0;
+} */
+
+.back-button {
+  position: fixed;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  background-image: url("/public/assets/images/back_nav.png");
+  background-size: cover; /* 이미지를 버튼 크기에 맞게 조정 */
+  background-repeat: no-repeat; /* 이미지를 반복하지 않음 */
+  bottom: 2rem;
+  left: 2rem;
+  background-color: #fffaec;
+  color: #0b1215;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정 */
+}
+
+.back-button:hover {
+  filter: brightness(0.8); /* 색을 탁하게 하는 효과 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 박스 그림자 추가 */
 }

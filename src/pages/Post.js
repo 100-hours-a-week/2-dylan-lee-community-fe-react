@@ -22,8 +22,9 @@ const Post = () => {
         });
 
         if (!response.ok) {
-          throw new Error(
-            `포스트를 가져오는데 실패했습니다: ${response.statusText}`
+          console.error(
+            "포스트를 가져오는데 실패했습니다:",
+            response.statusText
           );
         }
 
@@ -39,6 +40,10 @@ const Post = () => {
 
     fetchPost();
   }, [postId]);
+
+  if (loading) {
+    return <div>로딩중...</div>;
+  }
 
   // 댓글 수 갱신 함수
   const fetchCommentsCount = async () => {

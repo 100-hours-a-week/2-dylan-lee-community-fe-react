@@ -1,9 +1,10 @@
-.edit-form {
+.post-edit-form {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   width: 40%;
   padding-top: 30px;
+  background-color: #3d3d3d;
 }
 
 label,
@@ -22,6 +23,7 @@ label[for="title"],
 input,
 textarea {
   background-color: transparent; /* 배경을 투명하게 설정 */
+  color: #eeeeee; /* 글자색을 흰색으로 설정 */
   border: none; /* 테두리 없애기 */
   align-self: center;
   width: 100%;
@@ -56,5 +58,19 @@ textarea {
 }
 
 .padding-topbottom {
-  padding: 10px 0;
+  padding: 10px 5px;
+}
+
+.image-select {
+  display: flex;
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.selected-image-preview {
+  max-height: 100px; /* 이미지의 최대 높이를 100px로 설정 */
+  width: auto; /* 가로 크기는 자동으로 조정 */
+  display: block;
+  margin: 10px 10px 0 10px;
 }
