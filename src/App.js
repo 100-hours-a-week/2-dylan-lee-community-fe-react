@@ -4,6 +4,7 @@ import { ToastContainer } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
 import { HomeRedirect } from "./utils/route";
 import Header from "./components/Header";
+import BackButton from "./components/BackButton";
 import { useSession } from "./context/SessionContext";
 import "./styles/Common.css";
 
@@ -80,7 +81,7 @@ const App = () => {
         draggable
         pauseOnHover
       />
-
+      <BackButton />
       <Suspense fallback={<div className="loading-spinner">로딩 중...</div>}>
         <Routes>
           {routes.map(({ path, component: Component }) => (

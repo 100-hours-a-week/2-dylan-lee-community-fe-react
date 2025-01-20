@@ -39,7 +39,13 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
         },
       });
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         throw new Error(`코멘트 로드 에러: ${response.statusText}`);
       }
 

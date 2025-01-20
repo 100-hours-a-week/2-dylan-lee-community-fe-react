@@ -35,7 +35,13 @@ const PostContainer = (post) => {
         }
       );
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         throw new Error("좋아요 상태 가져오기 실패");
       }
 
@@ -55,7 +61,13 @@ const PostContainer = (post) => {
         }
       );
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         throw new Error("댓글 수 가져오기 실패");
       }
 
@@ -85,8 +97,12 @@ const PostContainer = (post) => {
       if (response.ok) {
         console.log("게시글 삭제 성공");
         navigate("/");
-      } else {
-        console.error("게시글 삭제 실패");
+      } else if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
       }
     } catch (error) {
       console.error("게시글 삭제 실패:", error.message);
@@ -105,7 +121,13 @@ const PostContainer = (post) => {
         credentials: "include",
       });
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         console.error("좋아요 처리 실패");
       }
 

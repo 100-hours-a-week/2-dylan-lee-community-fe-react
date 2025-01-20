@@ -10,7 +10,7 @@ const CommentBox = ({ comment, onEditClick, onDeleteClick }) => {
 
   return (
     <div className="comment-box">
-      <div className="post-info">
+      <div className="comment-info">
         <div className="author-container">
           <div className="profile-circle">
             <img

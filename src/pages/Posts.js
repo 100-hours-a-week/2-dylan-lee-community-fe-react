@@ -99,12 +99,7 @@ const Posts = () => {
     <div className="default-container">
       <div className="posts-container">
         <div className="title">
-          <span className="normal-weight">
-            안녕하세요,
-            <br />
-            아무 말 대잔치
-            <strong> 게시판</strong> 입니다.
-          </span>
+          <span className="normal-weight"></span>
         </div>
         <Button
           type="round"
@@ -118,7 +113,7 @@ const Posts = () => {
           <PostBox key={post.post_id} post={post} />
         ))}
         {loading && <p>Loading...</p>}
-        {!hasMore && <p>모든 포스트를 불러왔습니다.</p>}
+        {!hasMore && <p>끝!</p>}
       </div>
     </div>
   );

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/AuthForm.css";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 
-const SignupForm = ({ onFailure }) => {
+const SignupForm = ({ onFailure, onComplete, onBack }) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -18,15 +17,50 @@ const SignupForm = ({ onFailure }) => {
   const [passwordCheckHelper, setPasswordCheckHelper] = useState("");
   const [nicknameHelper, setNicknameHelper] = useState("");
 
+  const [step, setStep] = useState(1);
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const goToNextStep = async () => {
+    if (step === 1) {
+      const isEmailValid = await checkEmail(email);
+      console.log("isEmailValid:", isEmailValid);
+      if (!isEmailValid) {
+        return;
+      }
+    }
+    setStep((prev) => prev + 1);
+  };
+  const goToPreviousStep = () => setStep((prev) => Math.max(1, prev - 1));
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+
+  useEffect(() => {
+    validateStep();
+  }, [email, password, passwordCheck, nickname, step]);
+
+  const validateStep = () => {
+    switch (step) {
+      case 1:
+        setIsNextDisabled(!validateEmail(email));
+        break;
+      case 2:
+        setIsNextDisabled(
+          !validatePassword(password) || !validatePasswordCheck(passwordCheck)
+        );
+        break;
+      case 3:
+        setIsNextDisabled(!validateNickname(nickname));
+        break;
+      default:
+        setIsNextDisabled(true);
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       // 검증 로직
-
       if (file.size > MAX_FILE_SIZE) {
         onFailure("이미지 크기는 5MB를 넘을 수 없습니다.");
         return;
@@ -42,7 +76,7 @@ const SignupForm = ({ onFailure }) => {
     }
   };
 
-  const validateEmail = (value) => {
+  const validateEmail = async (value) => {
     if (!value || !emailRegex.test(value)) {
       setEmailHelper("올바른 이메일 주소 형식을 입력해주세요.");
       return false;
@@ -51,13 +85,33 @@ const SignupForm = ({ onFailure }) => {
     return true;
   };
 
+  const checkEmail = async (value) => {
+    if (!value || !emailRegex.test(value)) {
+      setEmailHelper("올바른 이메일 주소 형식을 입력해주세요.");
+      return false;
+    }
+    // 서버에 이메일 중복 확인 요청
+    const response = await fetch("/api/v1/auth/check-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: value }),
+    });
+    if (!response.ok) {
+      setEmailHelper("이미 사용 중인 이메일 주소입니다.");
+      return false;
+    }
+    return true;
+  };
+
   const validatePassword = (value) => {
-    if (!value) {
-      setPasswordHelper("비밀번호를 입력해주세요.");
+    if (value.length < 8) {
+      setPasswordHelper("8자 이상 입력해주세요.");
       return false;
     }
     if (!passwordRegex.test(value)) {
-      setPasswordHelper("비밀번호의 형식이 올바르지 않습니다.");
+      setPasswordHelper("특수문자, 숫자, 대소문자를 포함해주세요.");
       return false;
     }
     setPasswordHelper("");
@@ -122,6 +176,7 @@ const SignupForm = ({ onFailure }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (handleValidation()) {
       try {
         let profileImageUrl = profileImage;
@@ -165,8 +220,10 @@ const SignupForm = ({ onFailure }) => {
 
         const userData = await response.json();
         console.log("회원가입 성공:", userData);
-        navigate("/posts"); // posts 페이지로 이동
-        window.location.reload();
+        onBack();
+        onComplete();
+        // navigate("/posts");
+        // window.location.reload();
       } catch (error) {
         console.error("회원가입 실패:", error.message);
         onFailure(error.message);
@@ -175,116 +232,145 @@ const SignupForm = ({ onFailure }) => {
   };
 
   return (
-    <form className="auth-form" onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label>프로필 사진</label>
-        <div className="helper-text" id="image-message"></div>
-        <label htmlFor="profile-image-input" className="profile-image-wrapper">
-          {selectedImage ? (
-            <img
-              src={selectedImage}
-              alt="프로필 이미지 미리보기"
-              className="profile-image"
-            />
-          ) : (
-            <div className="profile-placeholder">+</div>
-          )}
-        </label>
-
-        <input
-          type="file"
-          id="profile-image-input"
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleImageUpload}
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="email">이메일*</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="이메일을 입력하세요"
-          value={email}
-          onChange={handleEmailChange}
-        />
-        <div
-          className={`helper-text ${emailHelper ? "show" : ""}`}
-          id="email-message"
-        >
-          {emailHelper}
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="password">비밀번호*</label>
-        <input
-          type="password"
-          id="password"
-          placeholder="비밀번호를 입력하세요"
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <div
-          className={`helper-text ${passwordHelper ? "show" : ""}`}
-          id="password-message"
-        >
-          {passwordHelper}
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="password-check">비밀번호 확인*</label>
-        <input
-          type="password"
-          id="password-check"
-          placeholder="비밀번호를 한번 더 입력하세요"
-          value={passwordCheck}
-          onChange={handlePasswordCheckChange}
-        />
-        <div
-          className={`helper-text ${passwordCheckHelper ? "show" : ""}`}
-          id="password-check-message"
-        >
-          {passwordCheckHelper}
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="nickname">닉네임*</label>
-        <input
-          type="text"
-          id="nickname"
-          name="닉네임"
-          placeholder="닉네임을 입력하세요"
-          value={nickname}
-          onChange={handleNicknameChange}
-        />
-        <div
-          className={`helper-text ${nicknameHelper ? "show" : ""}`}
-          id="nickname-message"
-        >
-          {nicknameHelper}
-        </div>
-      </div>
-      <Button
-        type="submit"
-        size="large"
-        onClick={() => console.log("Submit Clicked")}
-      >
-        회원가입
-      </Button>
-      <Button
-        type="ghost"
-        onClick={(e) => {
-          e.preventDefault(); // 폼 제출 동작 방지
-          navigate("/login"); // 로그인 페이지로 이동
+    <div className="signup-form-wrapper">
+      <button
+        type="button"
+        className="prev-button"
+        onClick={() => {
+          if (step > 1) goToPreviousStep();
+          else onBack();
         }}
-      >
-        로그인하러 가기
-      </Button>
-    </form>
+      />
+      <form className="signup-form" onSubmit={handleSubmit}>
+        {step === 1 && (
+          <>
+            <div className="form-group">
+              <label>프로필 사진</label>
+              <div className="helper-text" id="image-message"></div>
+              <label
+                htmlFor="profile-image-input"
+                className="profile-image-wrapper"
+              >
+                {selectedImage ? (
+                  <img
+                    src={selectedImage}
+                    alt="프로필 이미지 미리보기"
+                    className="profile-image"
+                  />
+                ) : (
+                  <div className="profile-placeholder">+</div>
+                )}
+              </label>
+
+              <input
+                type="file"
+                id="profile-image-input"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageUpload}
+              />
+            </div>
+            <div className="form-group">
+              <div className="g-input">
+                <input
+                  type="email"
+                  id="email"
+                  placeholder=" "
+                  value={email}
+                  onChange={handleEmailChange}
+                />
+
+                <label htmlFor="email">이메일*</label>
+                <div
+                  className={`helper-text ${emailHelper ? "show" : ""}`}
+                  id="email-message"
+                >
+                  {emailHelper}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <div className="form-group">
+              <div className="g-input">
+                <input
+                  type="password"
+                  id="password"
+                  placeholder=" "
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
+                <label htmlFor="password">비밀번호*</label>
+                <div
+                  className={`helper-text ${passwordHelper ? "show" : ""}`}
+                  id="password-message"
+                >
+                  {passwordHelper}
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="g-input">
+                <input
+                  type="password"
+                  id="password-check"
+                  placeholder=" "
+                  value={passwordCheck}
+                  onChange={handlePasswordCheckChange}
+                />
+                <label htmlFor="password-check">비밀번호 확인*</label>
+
+                <div
+                  className={`helper-text ${passwordCheckHelper ? "show" : ""}`}
+                  id="password-check-message"
+                >
+                  {passwordCheckHelper}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <div className="form-group">
+              <div className="g-input">
+                <input
+                  type="text"
+                  id="nickname"
+                  name="닉네임"
+                  placeholder=" "
+                  value={nickname}
+                  onChange={handleNicknameChange}
+                />
+                <label htmlFor="nickname">닉네임*</label>
+
+                <div
+                  className={`helper-text ${nicknameHelper ? "show" : ""}`}
+                  id="nickname-message"
+                >
+                  {nicknameHelper}
+                </div>
+              </div>
+            </div>
+            <Button type="submit" size="large">
+              회원가입
+            </Button>
+          </>
+        )}
+      </form>
+      {step !== 3 && (
+        <button
+          type="button"
+          className="next-button"
+          onClick={goToNextStep}
+          disabled={isNextDisabled}
+        />
+      )}
+    </div>
   );
 };
 

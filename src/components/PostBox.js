@@ -18,7 +18,7 @@ const PostBox = ({ post }) => {
           <div className="post-date">{formatDate(post.created_at)}</div>
         </div>
       </div>
-      <div className="author-container padding">
+      <div className="author-container post-box-padding">
         <div className="profile-circle">
           <img src={profileImageUrl(post.profile_image)} alt="프로필 이미지" />
         </div>

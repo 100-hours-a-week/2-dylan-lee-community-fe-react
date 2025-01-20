@@ -4,7 +4,7 @@ import "../styles/PostForm.css";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 
-const PostEditForm = ({ postId }) => {
+const PostEditForm = ({ postId, onFailure }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -65,6 +65,7 @@ const PostEditForm = ({ postId }) => {
         setImage(file); // 이미지 파일 선택
       } catch (error) {
         console.error(error.message);
+        onFailure();
       }
     }
   };
@@ -102,14 +103,23 @@ const PostEditForm = ({ postId }) => {
           method: "POST",
           body: formData,
         });
-        if (!response.ok) {
+
+        if (response.status === 401) {
+          console.error("로그인이 필요합니다.");
+          // 페이지 새로고침
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000); // 3초 후 새로고침
+        } else if (!response.ok) {
           console.error("이미지 업로드 실패");
         }
+
         const data = await response.json();
         postImageUrl = data.url;
         console.log("이미지 업로드 성공:", data);
       } catch (error) {
         console.error("이미지 업로드 실패:", error.message);
+        onFailure();
       }
     }
 
@@ -135,7 +145,14 @@ const PostEditForm = ({ postId }) => {
         }),
       });
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        console.error("로그인이 필요합니다.");
+
+        // 페이지 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000); // 3초 후 새로고침
+      } else if (!response.ok) {
         console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
       }
 
@@ -144,13 +161,14 @@ const PostEditForm = ({ postId }) => {
       navigate(`/post/${newPostId}`);
     } catch (error) {
       console.error(error.message);
+      onFailure();
       // setHelperText("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
   return (
     <>
-      <form className="edit-form" onSubmit={handleSubmit}>
+      <form className="post-edit-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">제목*</label>
           <div className="grey-line"></div>

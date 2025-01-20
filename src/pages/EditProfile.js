@@ -4,22 +4,18 @@ import useToast from "../components/useToast";
 
 const EditProfile = () => {
   const { showToast } = useToast();
-  const handleProfileEditFailure = () => {
-    showToast("닉네임과 프로필 사진을 다시 확인해주세요.");
-  };
-  const handleProfileEditSuccess = () => {
-    // 3초 뒤에 페이지 새로고침
-    setTimeout(() => {
-      window.location.reload();
-    }, 2000);
+  const handleProfileEdit = (e) => {
+    showToast(e);
+    if (e === "프로필이 수정되었습니다.") {
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
   };
 
   return (
     <div className="default-container">
-      <ProfileEditForm
-        onFailure={handleProfileEditFailure}
-        onSuccess={handleProfileEditSuccess}
-      />
+      <ProfileEditForm onChange={handleProfileEdit} />
     </div>
   );
 };

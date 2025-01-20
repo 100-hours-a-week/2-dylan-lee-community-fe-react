@@ -12,6 +12,7 @@
 /* 기본 스타일 */
 button.btn-invalid {
   background-color: #fffaec;
+  cursor: not-allowed;
 }
 
 /* 유효할 때 */
@@ -19,10 +20,15 @@ button.btn-valid {
   background-color: #f5ecd5;
 }
 
+.button:hover {
+  filter: brightness(0.8); /* 색을 탁하게 하는 효과 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 박스 그림자 추가 */
+}
+
 /* 타입별 스타일 */
 .button-submit {
   padding: 10px 25px;
-  background-color: #aca0eb;
+  background-color: #fffaec;
   font-size: 14px;
   border-radius: 8px;
 }
@@ -30,13 +36,16 @@ button.btn-valid {
 .button-edit {
   display: flex;
   justify-content: flex-end;
-  background-color: transparent;
-  border: 1px solid #aaa0e6;
+  background-color: #fffaec;
+  border: 1px solid #fffaec;
+  font-size: 12px;
   border-radius: 8px;
+  margin-left: 8px; /* 버튼 사이 여백 추가 */
+  padding: 6px 12px;
 }
 
 .button-ghost {
-  padding: 4px;
+  padding: 5px;
   background-color: transparent;
   color: #eeeeee;
   font-size: 14px;
@@ -46,9 +55,9 @@ button.btn-valid {
 
 .button-round {
   padding: 10px 25px;
-  background-color: #aaa0e6;
+  background-color: #fffaec;
+  color: #0b1215;
   font-size: 14px;
-  color: white;
   border-radius: 60px;
 }
 
@@ -65,6 +74,21 @@ button.btn-valid {
   line-height: 1.5;
   font-size: 16px;
   font-weight: 700;
+}
+
+.button-image-delete {
+  background-color: transparent;
+  font-weight: 400;
+  color: #eeeeee;
+  font-size: 0.85rem;
+  border-radius: 12px;
+  padding: 0 10px 0 10px;
+}
+
+.button-image-delete:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* 배경색을 살짝 밝게 */
+  transform: scale(1.05); /* 크기를 약간 키움 */
+  filter: brightness(1.5); /* 색을 밝게 하는 효과 */
 }
 
 /* 크기별 스타일 */
@@ -93,5 +117,5 @@ button.btn-valid {
 }
 
 .active {
-  background-color: #7f6aee;
+  background-color: #f5ecd5;
 }

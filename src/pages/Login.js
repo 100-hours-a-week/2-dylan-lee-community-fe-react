@@ -1,53 +1,76 @@
-import React from "react";
+import React, { useState } from "react";
 import LoginForm from "../components/LoginForm";
+import SignupForm from "../components/SignupForm";
 import useToast from "../components/useToast";
 import "../styles/Login.css";
 import Typewriter from "typewriter-effect";
 
 const Login = () => {
   const { showToast } = useToast();
+  const [isSigningUp, setIsSigningUp] = useState(false); // 회원가입 모드 여부
+
+  const handleFailure = (e) => {
+    showToast(e);
+  };
 
   const handleLoginFailure = () => {
     showToast("이메일 또는 비밀번호를 확인하세요.");
   };
 
-  new Typewriter("#typewriter", {
-    strings: ["Hello", "World"],
-    autoStart: true,
-  });
+  const handleSignupComplete = () => {
+    setIsSigningUp(false);
+    showToast("회원가입이 완료되었습니다!");
+  };
 
   return (
-    <div className="container">
+    <div className="auth-container">
       <div className="left-side">
         <Typewriter
           onInit={(typewriter) => {
             typewriter
-              .typeString('<span style="font-size: 1.5rem;">나ㅊ가리</span>')
-              .pauseFor(400)
+              .changeDelay(80)
+              .typeString("나착리느ㄴ ")
               .deleteAll()
-              .typeString('<span style="font-size: 1.5rem;">낯가리는</span>')
+              .changeDelay(160)
+              .typeString("낯 가리는")
               .pauseFor(2000)
-              .deleteChars(2)
+              .deleteChars(3)
               .pauseFor(500)
               .deleteChars(1)
-              .typeString(
-                '<span style="font-size: 1.5rem;"> 가리는 사람들</span>'
-              )
+              .typeString("가리는 사람")
+              .pauseFor(300)
+              .typeString("..")
+              .pauseFor(400)
+              .deleteChars(2)
+              .pauseFor(800)
+              .typeString("들")
               .pauseFor(1000)
-              .typeString('<span style="font-size: 1.5rem;">...</span>')
-              .pauseFor(2500)
+              .typeString("...")
+              .pauseFor(4000)
               .start();
           }}
           options={{
+            autoStart: true,
             loop: true,
-            cursor: '<span style="font-size: 1.5rem;">|</span>',
-            delay: 150,
+            wrapperClassName: "typewriter-title",
+            cursorClassName: "typewriter-cursor",
           }}
         />
       </div>
       <div className="right-side">
         <div className="login-container">
-          <LoginForm onFailure={handleLoginFailure} />
+          {!isSigningUp ? (
+            <LoginForm
+              onFailure={handleLoginFailure}
+              onSignup={() => setIsSigningUp(true)}
+            />
+          ) : (
+            <SignupForm
+              onFailure={handleFailure}
+              onComplete={handleSignupComplete}
+              onBack={() => setIsSigningUp(false)}
+            />
+          )}
         </div>
       </div>
     </div>

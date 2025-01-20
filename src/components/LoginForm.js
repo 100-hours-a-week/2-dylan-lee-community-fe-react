@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import "../styles/AuthForm.css";
 import Button from "./Buttons";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 
-const LoginForm = ({ onFailure }) => {
+const LoginForm = ({ onFailure, onSignup }) => {
   const navigate = useNavigate();
   const { setUser, fetchUser } = useSession();
 
@@ -27,12 +26,12 @@ const LoginForm = ({ onFailure }) => {
   };
 
   const validatePassword = (value) => {
-    if (!value) {
-      setPasswordHelper("비밀번호를 입력해주세요.");
+    if (!passwordRegex.test(value)) {
+      setPasswordHelper("특수문자, 숫자, 대소문자를 포함해주세요.");
       return false;
     }
-    if (!passwordRegex.test(value)) {
-      setPasswordHelper("비밀번호의 형식이 올바르지 않습니다.");
+    if (value.length < 8) {
+      setPasswordHelper("8자 이상 입력해주세요.");
       return false;
     }
     setPasswordHelper("");
@@ -90,37 +89,44 @@ const LoginForm = ({ onFailure }) => {
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      <div className="title">로그인</div>
+      <div className="title">
+        로그인
+        <span className="cursor-effect">|</span>
+      </div>
       <div className="form-group">
-        <label htmlFor="email">이메일</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="이메일을 입력하세요"
-          value={email}
-          onChange={handleEmailChange}
-        />
-        <div
-          className={`helper-text ${emailHelper ? "show" : ""}`}
-          id="email-message"
-        >
-          {emailHelper}
+        <div className="g-input">
+          <input
+            type="email"
+            id="email"
+            placeholder=" "
+            value={email}
+            onChange={handleEmailChange}
+          />
+          <label htmlFor="email">이메일</label>
+          <div
+            className={`helper-text ${emailHelper ? "show" : ""}`}
+            id="email-message"
+          >
+            {emailHelper}
+          </div>
         </div>
       </div>
       <div className="form-group">
-        <label htmlFor="password">비밀번호</label>
-        <input
-          type="password"
-          id="password"
-          placeholder="비밀번호를 입력하세요"
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <div
-          className={`helper-text ${passwordHelper ? "show" : ""}`}
-          id="password-message"
-        >
-          {passwordHelper}
+        <div className="g-input">
+          <input
+            type="password"
+            id="password"
+            placeholder=" "
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          <label htmlFor="password">비밀번호</label>
+          <div
+            className={`helper-text ${passwordHelper ? "show" : ""}`}
+            id="password-message"
+          >
+            {passwordHelper}
+          </div>
         </div>
       </div>
       <div className="button-group">
@@ -139,7 +145,7 @@ const LoginForm = ({ onFailure }) => {
           type="ghost"
           onClick={(e) => {
             e.preventDefault();
-            navigate("/signup"); // 회원가입 페이지로 이동
+            onSignup();
           }}
         >
           회원가입

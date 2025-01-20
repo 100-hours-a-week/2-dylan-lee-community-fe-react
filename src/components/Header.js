@@ -8,7 +8,6 @@ const Header = () => {
   const { setUser, user, loading } = useSession();
   console.log("user:", user);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isBackButtonVisible, setIsBackButtonVisible] = useState(true);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,27 +38,6 @@ const Header = () => {
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);
   };
-
-  const handleBackButtonClick = () => {
-    if (location.pathname.startsWith("/post")) {
-      navigate("/posts");
-      return;
-    }
-    console.log("location:", location.pathname);
-    navigate(-1);
-  };
-
-  // 뒤로가기 버튼 표시 여부
-  useEffect(() => {
-    const hidePaths = [
-      "/",
-      "/login",
-      "/posts",
-      "/edit_profile",
-      "/edit_password",
-    ];
-    setIsBackButtonVisible(!hidePaths.includes(location.pathname));
-  }, [location.pathname]);
 
   // 드롭다운 메뉴 닫기
   useEffect(() => {
@@ -95,41 +73,30 @@ const Header = () => {
 
   return (
     <div id="header">
-      <div className="title-box">
-        {isBackButtonVisible && (
-          <button
-            className="back-button absolute-title-left"
-            onClick={handleBackButtonClick}
-          ></button>
-        )}
-        <div className="logo" onClick={() => navigate("/")}></div>
+      <div className="logo" onClick={() => navigate("/")}></div>
 
-        {user ? (
-          <div
-            className="profile-circle absolute-title-right header-profile"
-            onClick={toggleDropdown}
-          >
-            <img
-              src={profileImageUrl(user.profile_image_path)}
-              alt="프로필 이미지"
-            />
-          </div>
-        ) : null}
-        {dropdownVisible && (
-          <div className="dropdown-menu">
-            <ul>
-              {dropdownItems.map((item, index) => (
-                <li
-                  key={index}
-                  onClick={item.path ? () => navigate(item.path) : item.action}
-                >
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+      {user ? (
+        <div className="header-profile" onClick={toggleDropdown}>
+          <img
+            src={profileImageUrl(user.profile_image_path)}
+            alt="프로필 이미지"
+          />
+        </div>
+      ) : null}
+      {dropdownVisible && (
+        <div className="dropdown-menu">
+          <ul>
+            {dropdownItems.map((item, index) => (
+              <li
+                key={index}
+                onClick={item.path ? () => navigate(item.path) : item.action}
+              >
+                {item.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

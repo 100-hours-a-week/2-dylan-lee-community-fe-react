@@ -4,12 +4,9 @@
   align-items: center;
   justify-content: center;
   width: 25%;
-  height: 0%;
-  padding-top: 15px;
-}
-
-.center {
-  height: 100%;
+  padding: 20px 25px;
+  border-radius: 16px;
+  background-color: #292c33;
 }
 
 .margin-bottom {
@@ -18,5 +15,13 @@
 
 p {
   align-self: flex-start;
-  margin: 5px 0 10px 0;
+  margin: 5px 0 15px 5px;
+}
+
+.profile-image-label-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0 0 0;
 }
