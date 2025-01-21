@@ -81,16 +81,13 @@ const PostContainer = (post) => {
 
   const handleOpenModal = () => {
     setShowModal(true);
-    console.log("모달 열림 상태:", showModal); // 상태 확인
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
   const handleConfirm = async () => {
-    console.log("확인 버튼 클릭");
     try {
       const response = await fetch(`/api/v1/posts/${post.post_id}`, {
         method: "DELETE",

@@ -26,7 +26,6 @@ const ProfileEditForm = () => {
     setEmail(user.email);
     setNickname(user.nickname);
     setOriginalImage(profileImagePath);
-    // console.log("profileImage:", profileImage);
   }, [user]);
 
   if (!user) {
@@ -79,7 +78,6 @@ const ProfileEditForm = () => {
       } else if (profileImage) {
         profileImageUrl = user.profile_image_path;
       }
-      console.log(profileImage);
       // 이미지 업로드
       if (selectedImage) {
         const formData = new FormData();
@@ -156,16 +154,13 @@ const ProfileEditForm = () => {
 
   const handleOpenModal = () => {
     setShowModal(true);
-    console.log("모달 열림 상태:", showModal); // 상태 확인
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
   const handleConfirm = async () => {
-    console.log("확인 버튼 클릭");
     try {
       const response = await fetch("/api/v1/users/me", {
         method: "DELETE",
@@ -182,7 +177,6 @@ const ProfileEditForm = () => {
         throw new Error("회원 탈퇴 실패");
       }
 
-      console.log("회원 탈퇴 성공");
       setShowModal(false); // 모달 닫기
       showToast_("회원 탈퇴되었습니다");
       setTimeout(() => {

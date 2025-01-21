@@ -117,7 +117,6 @@ const PostEditForm = ({ postId }) => {
 
         const data = await response.json();
         postImageUrl = data.url;
-        console.log("이미지 업로드 성공:", data);
       } catch (error) {
         console.error("이미지 업로드 실패:", error.message);
         showToast_("이미지 업로드에 실패했습니다.");
@@ -126,12 +125,6 @@ const PostEditForm = ({ postId }) => {
 
     // 게시물 등록 또는 수정 요청
     try {
-      console.log(
-        "title, content, postImageUrl:",
-        title,
-        content,
-        postImageUrl
-      );
       const method = postId ? "PUT" : "POST";
       const url = postId ? `/api/v1/posts/${postId}` : `/api/v1/posts`;
       const response = await fetch(url, {
