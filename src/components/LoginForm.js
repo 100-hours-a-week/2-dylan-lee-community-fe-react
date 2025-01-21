@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "./Buttons";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
+import { showToast_ } from "./Toast";
 
 const LoginForm = ({ onFailure, onSignup }) => {
   const navigate = useNavigate();
@@ -77,12 +78,11 @@ const LoginForm = ({ onFailure, onSignup }) => {
         }
         // 세션 정보 업데이트
         const userData = await data.json();
-        console.log("로그인 성공:", userData);
         await fetchUser();
         navigate("/");
       } catch (error) {
-        onFailure();
         console.error("로그인 실패:", error.message);
+        showToast_("로그인에 실패했습니다.", "error");
       }
     }
   };
@@ -103,12 +103,16 @@ const LoginForm = ({ onFailure, onSignup }) => {
             onChange={handleEmailChange}
           />
           <label htmlFor="email">이메일</label>
-          <div
-            className={`helper-text ${emailHelper ? "show" : ""}`}
-            id="email-message"
-          >
-            {emailHelper}
-          </div>
+          {email ? (
+            <div
+              className={`helper-text ${emailHelper ? "show" : ""}`}
+              id="email-message"
+            >
+              {emailHelper}
+            </div>
+          ) : (
+            <div className="helper-text" id="email-message"></div>
+          )}
         </div>
       </div>
       <div className="form-group">
@@ -121,12 +125,16 @@ const LoginForm = ({ onFailure, onSignup }) => {
             onChange={handlePasswordChange}
           />
           <label htmlFor="password">비밀번호</label>
-          <div
-            className={`helper-text ${passwordHelper ? "show" : ""}`}
-            id="password-message"
-          >
-            {passwordHelper}
-          </div>
+          {password ? (
+            <div
+              className={`helper-text ${passwordHelper ? "show" : ""}`}
+              id="password-message"
+            >
+              {passwordHelper}
+            </div>
+          ) : (
+            <div className="helper-text" id="password-message"></div>
+          )}
         </div>
       </div>
       <div className="button-group">

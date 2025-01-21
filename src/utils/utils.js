@@ -1,5 +1,3 @@
-import useToast from "../components/useToast";
-
 function formatCount(count) {
   if (count >= 100000) {
     return `${(count / 1000).toFixed(0)}k`;
@@ -59,8 +57,6 @@ function profileImageUrl(profile_image_path) {
   const address = `http://localhost:8000/api/v1/upload/${profile_image_path}`;
   return address;
 }
-
-// function ToastMessage()
 
 export {
   formatCount,

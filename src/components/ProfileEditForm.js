@@ -4,8 +4,9 @@ import "../styles/EditForm.css";
 import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
 import { profileImageUrl } from "../utils/utils";
+import { showToast_ } from "./Toast";
 
-const ProfileEditForm = ({ onChange }) => {
+const ProfileEditForm = () => {
   const { user } = useSession();
   const [profileImage, setProfileImage] = useState(""); // 업로드 이미지 URL
   const [selectedImage, setSelectedImage] = useState(null); // 선택한 이미지 파일
@@ -25,7 +26,6 @@ const ProfileEditForm = ({ onChange }) => {
     setEmail(user.email);
     setNickname(user.nickname);
     setOriginalImage(profileImagePath);
-    // console.log("profileImage:", profileImage);
   }, [user]);
 
   if (!user) {
@@ -72,8 +72,12 @@ const ProfileEditForm = ({ onChange }) => {
     setLoading(true); // 로딩 시작
 
     try {
-      let profileImageUrl = user.profile_image_path;
-      console.log(profileImageUrl);
+      let profileImageUrl = null;
+      if (selectedImage) {
+        profileImageUrl = user.profile_image_path;
+      } else if (profileImage) {
+        profileImageUrl = user.profile_image_path;
+      }
       // 이미지 업로드
       if (selectedImage) {
         const formData = new FormData();
@@ -90,6 +94,7 @@ const ProfileEditForm = ({ onChange }) => {
 
         if (uploadResponse.status === 401) {
           console.error("로그인이 필요합니다.");
+          showToast_("로그인이 필요합니다.");
           // 페이지 새로고침
           setTimeout(() => {
             window.location.reload();
@@ -126,6 +131,7 @@ const ProfileEditForm = ({ onChange }) => {
 
       if (sessionUpdateResponse.status === 401) {
         console.error("로그인이 필요합니다.");
+        showToast_("로그인이 필요합니다.");
         // 페이지 새로고침
         setTimeout(() => {
           window.location.reload();
@@ -134,12 +140,13 @@ const ProfileEditForm = ({ onChange }) => {
         throw new Error("세션 갱신 실패");
       }
 
-      const updatedUser = await sessionUpdateResponse.json();
-      onChange("프로필이 수정되었습니다");
-      console.log("세션 갱신 성공:", updatedUser);
+      showToast_("프로필이 수정되었습니다");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000); // 3초 후 새로고침
     } catch (error) {
       console.error("프로필 수정 실패:", error.message);
-      onChange("프로필 수정에 실패했습니다");
+      showToast_("프로필 이미지와 닉네임을 확인해주세요");
     } finally {
       setLoading(false); // 로딩 종료
     }
@@ -147,16 +154,13 @@ const ProfileEditForm = ({ onChange }) => {
 
   const handleOpenModal = () => {
     setShowModal(true);
-    console.log("모달 열림 상태:", showModal); // 상태 확인
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
   const handleConfirm = async () => {
-    console.log("확인 버튼 클릭");
     try {
       const response = await fetch("/api/v1/users/me", {
         method: "DELETE",
@@ -173,10 +177,14 @@ const ProfileEditForm = ({ onChange }) => {
         throw new Error("회원 탈퇴 실패");
       }
 
-      console.log("회원 탈퇴 성공");
       setShowModal(false); // 모달 닫기
+      showToast_("회원 탈퇴되었습니다");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000); // 3초 후 새로고침
     } catch (error) {
       console.error("회원 탈퇴 실패:", error.message);
+      showToast_("회원 탈퇴에 실패했습니다");
     }
   };
 
@@ -238,7 +246,6 @@ const ProfileEditForm = ({ onChange }) => {
               onChange={handleNicknameChange}
             />
             <label htmlFor="nickname">닉네임</label>
-
             <div
               className={`helper-text ${nicknameHelper ? "show" : ""}`}
               id="nickname-message"

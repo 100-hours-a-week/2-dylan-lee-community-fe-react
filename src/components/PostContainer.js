@@ -9,6 +9,7 @@ import { useSession } from "../context/SessionContext";
 import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import Modal from "./Modal";
+import { showToast_ } from "./Toast";
 
 const PostContainer = (post) => {
   const [showModal, setShowModal] = useState(false);
@@ -80,25 +81,22 @@ const PostContainer = (post) => {
 
   const handleOpenModal = () => {
     setShowModal(true);
-    console.log("모달 열림 상태:", showModal); // 상태 확인
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
   const handleConfirm = async () => {
-    console.log("확인 버튼 클릭");
     try {
       const response = await fetch(`/api/v1/posts/${post.post_id}`, {
         method: "DELETE",
       });
       if (response.ok) {
-        console.log("게시글 삭제 성공");
         navigate("/");
       } else if (response.status === 401) {
         console.error("로그인이 필요합니다.");
+        showToast_("로그인이 필요합니다.");
         // 페이지 새로고침
         setTimeout(() => {
           window.location.reload();
@@ -106,6 +104,7 @@ const PostContainer = (post) => {
       }
     } catch (error) {
       console.error("게시글 삭제 실패:", error.message);
+      showToast_("게시글 삭제에 실패했습니다.");
     } finally {
       handleCloseModal();
     }
@@ -123,12 +122,14 @@ const PostContainer = (post) => {
 
       if (response.status === 401) {
         console.error("로그인이 필요합니다.");
+        showToast_("로그인이 필요합니다.");
         // 페이지 새로고침
         setTimeout(() => {
           window.location.reload();
         }, 3000); // 3초 후 새로고침
       } else if (!response.ok) {
         console.error("좋아요 처리 실패");
+        showToast_("좋아요 처리에 실패했습니다");
       }
 
       const { isLike: updatedIsLike, likes: updatedLikes } =
@@ -137,6 +138,7 @@ const PostContainer = (post) => {
       setLikes(updatedLikes);
     } catch (error) {
       console.error("좋아요 처리 실패:", error.message);
+      showToast_("좋아요 처리에 실패했습니다");
     } finally {
       setLoading(false);
     }

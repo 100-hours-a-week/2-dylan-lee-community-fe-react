@@ -3,6 +3,7 @@ import Button from "./Buttons";
 import CommentBox from "../components/CommentBox";
 import Modal from "./Modal";
 import { convertTime } from "../utils/utils";
+import { showToast_ } from "./Toast";
 
 const CommentContainer = ({ postId, onCommentUpdated }) => {
   const [showModal, setShowModal] = useState(false);
@@ -23,7 +24,6 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
     if (isFetching || !hasMore) return;
     isFetching = true;
     setLoading(true);
-    console.log("댓글 가져오기 시작");
 
     try {
       const params = firstCreatedAt
@@ -41,6 +41,7 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
 
       if (response.status === 401) {
         console.error("로그인이 필요합니다.");
+        showToast_("로그인이 필요합니다.");
         // 페이지 새로고침
         setTimeout(() => {
           window.location.reload();
@@ -50,7 +51,6 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
       }
 
       const newComments = await response.json();
-      console.log(newComments);
 
       setComments((prevComments) => {
         const uniqueComments = [
@@ -79,11 +79,11 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
             ? comment
             : latest
         );
-        console.log("가장 오래된 댓글:", latestComment);
         setFirstCreatedAt(latestComment.created_at);
       }
     } catch (error) {
       console.error("댓글 가져오기 에러:", error.message);
+      showToast_("댓글을 불러오는 중 에러가 발생했습니다.");
     } finally {
       setLoading(false);
       isFetching = false;
@@ -118,13 +118,11 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
   const handleOpenModal = (commentId) => {
     setSelectedCommentId(commentId);
     setShowModal(true);
-    console.log("모달 열림 상태:", showModal); // 상태 확인
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedCommentId(null);
-    console.log("모달 닫힘 상태:", showModal); // 상태 확인
   };
 
   const handleConfirm = async () => {
@@ -142,12 +140,13 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
         setComments(sortedComments);
-        console.log("댓글 삭제 성공");
       } else {
         console.error("댓글 삭제 실패");
+        showToast_("댓글 삭제에 실패했습니다.");
       }
     } catch (error) {
       console.error("댓글 삭제 실패:", error.message);
+      showToast_("댓글 삭제에 실패했습니다.");
     } finally {
       handleCloseModal();
     }
@@ -159,7 +158,6 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
 
   const handleValidation = () => {
     if (!commentText.trim()) {
-      console.log("댓글을 입력해주세요.");
       return false;
     }
     return true;
@@ -194,12 +192,13 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
           );
           setComments(sortedComments);
           fetchComments();
-          console.log("댓글 수정 성공");
         } else {
           console.error("댓글 수정 실패");
+          showToast_("댓글 수정에 실패했습니다.");
         }
       } catch (error) {
         console.error("댓글 수정 실패:", error.message);
+        showToast_("댓글 수정에 실패했습니다.");
       }
     } else {
       // 댓글 등록 로직 추가
@@ -220,12 +219,13 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
           );
           setComments(sortedComments);
           setCommentText("");
-          console.log("댓글 등록 성공");
         } else {
           console.error("댓글 등록 실패");
+          showToast_("댓글 등록에 실패했습니다.");
         }
       } catch (error) {
         console.error("댓글 등록 실패:", error.message);
+        showToast_("댓글 등록에 실패했습니다.");
       }
     }
     onCommentUpdated();

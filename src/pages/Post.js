@@ -53,7 +53,6 @@ const Post = () => {
         throw new Error("댓글 수 가져오기 실패");
       }
       const { count } = await response.json();
-      console.log(count);
       setCommentsCount(count);
     } catch (error) {
       console.error("댓글 수 갱신 실패:", error.message);

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Button from "./Buttons";
 import "../styles/EditForm.css";
-import Toast from "./Toast";
+import { showToast_ } from "./Toast";
 
-const PasswordEditForm = ({ onChange, onComplete }) => {
+const PasswordEditForm = () => {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [passwordHelper, setPasswordHelper] = useState("");
@@ -75,6 +75,7 @@ const PasswordEditForm = ({ onChange, onComplete }) => {
 
         if (response.status === 401) {
           console.error("로그인이 필요합니다.");
+          showToast_("로그인이 필요합니다.");
           // 페이지 새로고침
           setTimeout(() => {
             window.location.reload();
@@ -83,14 +84,14 @@ const PasswordEditForm = ({ onChange, onComplete }) => {
           throw new Error("비밀번호 수정 실패");
         }
 
-        onComplete();
+        showToast_("비밀번호가 수정되었습니다.");
         // 3초 후에 로그인 페이지로 이동
         setTimeout(() => {
           window.location.href = "/login";
         }, 3000);
       } catch (error) {
         console.error("비밀번호 수정 실패:", error.message);
-        onChange();
+        showToast_("비밀번호 수정에 실패했습니다.");
       }
     }
   };
@@ -109,13 +110,16 @@ const PasswordEditForm = ({ onChange, onComplete }) => {
               onChange={handlePasswordChange}
             />
             <label htmlFor="password">비밀번호</label>
-
-            <div
-              className={`helper-text ${passwordHelper ? "show" : ""}`}
-              id="password-message"
-            >
-              {passwordHelper}
-            </div>
+            {password ? (
+              <div
+                className={`helper-text ${passwordHelper ? "show" : ""}`}
+                id="password-message"
+              >
+                {passwordHelper}
+              </div>
+            ) : (
+              <div className="helper-text" id="password-message"></div>
+            )}
           </div>
         </div>
         <div className="form-group">
@@ -129,19 +133,19 @@ const PasswordEditForm = ({ onChange, onComplete }) => {
             />
             <label htmlFor="password-check">비밀번호 확인</label>
 
-            <div
-              className={`helper-text ${passwordCheckHelper ? "show" : ""}`}
-              id="password-check-message"
-            >
-              {passwordCheckHelper}
-            </div>
+            {passwordCheck ? (
+              <div
+                className={`helper-text ${passwordCheckHelper ? "show" : ""}`}
+                id="password-check-message"
+              >
+                {passwordCheckHelper}
+              </div>
+            ) : (
+              <div className="helper-text" id="password-check-message"></div>
+            )}
           </div>
         </div>
-        <Button
-          type="submit"
-          size="large"
-          onClick={() => console.log("비밀번호 수정")}
-        >
+        <Button type="submit" size="large">
           수정하기
         </Button>
       </form>
