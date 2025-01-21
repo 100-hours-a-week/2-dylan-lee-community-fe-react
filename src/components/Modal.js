@@ -2,7 +2,6 @@ import React from "react";
 import "../styles/Modal.css";
 
 const Modal = ({ isOpen, title, message, onConfirm, onClose }) => {
-  console.log("Modal isOpen 상태:", isOpen); // 상태 확인
   if (!isOpen) return null; // 모달이 열려있지 않으면 null을 반환
 
   return (

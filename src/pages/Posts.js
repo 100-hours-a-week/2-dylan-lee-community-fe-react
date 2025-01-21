@@ -4,6 +4,7 @@ import PostBox from "../components/PostBox";
 import Button from "../components/Buttons";
 import "../styles/Posts.css";
 import { convertTime } from "../utils/utils";
+import { showToast_ } from "../components/Toast";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -66,6 +67,7 @@ const Posts = () => {
       }
     } catch (error) {
       console.error("포스트 Fetch 에러:", error.message);
+      showToast_("포스트를 가져오는데 실패했습니다");
     } finally {
       setLoading(false);
       isFetching = false;

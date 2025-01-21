@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
+import { showToast_ } from "./Toast";
 
-const SignupForm = ({ onFailure, onComplete, onBack }) => {
+const SignupForm = ({ onComplete, onBack }) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -22,7 +23,6 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
   const goToNextStep = async () => {
     if (step === 1) {
       const isEmailValid = await checkEmail(email);
-      console.log("isEmailValid:", isEmailValid);
       if (!isEmailValid) {
         return;
       }
@@ -62,12 +62,12 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
     if (file) {
       // 검증 로직
       if (file.size > MAX_FILE_SIZE) {
-        onFailure("이미지 크기는 5MB를 넘을 수 없습니다.");
+        showToast_("이미지 크기는 5MB를 넘을 수 없습니다");
         return;
       }
 
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-        onFailure("지원하지 않는 이미지 형식입니다.");
+        showToast_("지원하지 않는 이미지 형식입니다");
         return;
       }
 
@@ -196,7 +196,6 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
           }
           const uploadData = await response.json();
           profileImageUrl = uploadData.url;
-          console.log("이미지 업로드 성공:", profileImageUrl);
         }
 
         // 서버에 회원가입 요청
@@ -219,14 +218,11 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
         }
 
         const userData = await response.json();
-        console.log("회원가입 성공:", userData);
         onBack();
         onComplete();
-        // navigate("/posts");
-        // window.location.reload();
       } catch (error) {
         console.error("회원가입 실패:", error.message);
-        onFailure(error.message);
+        showToast_("회원가입에 실패했습니다.");
       }
     }
   };
@@ -279,14 +275,18 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
                   value={email}
                   onChange={handleEmailChange}
                 />
-
                 <label htmlFor="email">이메일*</label>
-                <div
-                  className={`helper-text ${emailHelper ? "show" : ""}`}
-                  id="email-message"
-                >
-                  {emailHelper}
-                </div>
+
+                {email ? (
+                  <div
+                    className={`helper-text ${emailHelper ? "show" : ""}`}
+                    id="email-message"
+                  >
+                    {emailHelper}
+                  </div>
+                ) : (
+                  <div className="helper-text" id="email-message"></div>
+                )}
               </div>
             </div>
           </>
@@ -304,12 +304,16 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
                   onChange={handlePasswordChange}
                 />
                 <label htmlFor="password">비밀번호*</label>
-                <div
-                  className={`helper-text ${passwordHelper ? "show" : ""}`}
-                  id="password-message"
-                >
-                  {passwordHelper}
-                </div>
+                {password ? (
+                  <div
+                    className={`helper-text ${passwordHelper ? "show" : ""}`}
+                    id="password-message"
+                  >
+                    {passwordHelper}
+                  </div>
+                ) : (
+                  <div className="helper-text" id="password-message"></div>
+                )}
               </div>
             </div>
             <div className="form-group">
@@ -323,12 +327,19 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
                 />
                 <label htmlFor="password-check">비밀번호 확인*</label>
 
-                <div
-                  className={`helper-text ${passwordCheckHelper ? "show" : ""}`}
-                  id="password-check-message"
-                >
-                  {passwordCheckHelper}
-                </div>
+                {passwordCheck ? (
+                  <div
+                    className={`helper-text ${passwordCheckHelper ? "show" : ""}`}
+                    id="password-check-message"
+                  >
+                    {passwordCheckHelper}
+                  </div>
+                ) : (
+                  <div
+                    className="helper-text"
+                    id="password-check-message"
+                  ></div>
+                )}
               </div>
             </div>
           </>
@@ -347,13 +358,16 @@ const SignupForm = ({ onFailure, onComplete, onBack }) => {
                   onChange={handleNicknameChange}
                 />
                 <label htmlFor="nickname">닉네임*</label>
-
-                <div
-                  className={`helper-text ${nicknameHelper ? "show" : ""}`}
-                  id="nickname-message"
-                >
-                  {nicknameHelper}
-                </div>
+                {nickname ? (
+                  <div
+                    className={`helper-text ${nicknameHelper ? "show" : ""}`}
+                    id="nickname-message"
+                  >
+                    {nicknameHelper}
+                  </div>
+                ) : (
+                  <div className="helper-text" id="nickname-message"></div>
+                )}
               </div>
             </div>
             <Button type="submit" size="large">

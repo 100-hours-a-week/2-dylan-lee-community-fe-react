@@ -6,7 +6,6 @@ import { profileImageUrl } from "../utils/utils";
 
 const Header = () => {
   const { setUser, user, loading } = useSession();
-  console.log("user:", user);
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const navigate = useNavigate();
@@ -21,7 +20,6 @@ const Header = () => {
       if (!data.ok) {
         throw new Error("로그아웃 실패");
       }
-      console.log("로그아웃 성공:", data);
       setUser(null);
       navigate("/"); // 로그인 페이지로 이동
     } catch (error) {
@@ -57,7 +55,7 @@ const Header = () => {
 
   // 접근 제어
   useEffect(() => {
-    const excludePaths = ["/login", "/signup"];
+    const excludePaths = ["/login"];
     if (!loading) {
       if (excludePaths.includes(location.pathname) && user) {
         navigate("/posts");

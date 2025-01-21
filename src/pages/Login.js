@@ -1,25 +1,16 @@
 import React, { useState } from "react";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
-import useToast from "../components/useToast";
 import "../styles/Login.css";
 import Typewriter from "typewriter-effect";
+import { showToast_ } from "../components/Toast";
 
 const Login = () => {
-  const { showToast } = useToast();
   const [isSigningUp, setIsSigningUp] = useState(false); // 회원가입 모드 여부
-
-  const handleFailure = (e) => {
-    showToast(e);
-  };
-
-  const handleLoginFailure = () => {
-    showToast("이메일 또는 비밀번호를 확인하세요.");
-  };
 
   const handleSignupComplete = () => {
     setIsSigningUp(false);
-    showToast("회원가입이 완료되었습니다!");
+    showToast_("회원가입이 완료되었습니다!");
   };
 
   return (
@@ -60,13 +51,9 @@ const Login = () => {
       <div className="right-side">
         <div className="login-container">
           {!isSigningUp ? (
-            <LoginForm
-              onFailure={handleLoginFailure}
-              onSignup={() => setIsSigningUp(true)}
-            />
+            <LoginForm onSignup={() => setIsSigningUp(true)} />
           ) : (
             <SignupForm
-              onFailure={handleFailure}
               onComplete={handleSignupComplete}
               onBack={() => setIsSigningUp(false)}
             />

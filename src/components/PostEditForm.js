@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "../styles/PostForm.css";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
+import { showToast_ } from "./Toast";
 
-const PostEditForm = ({ postId, onFailure }) => {
+const PostEditForm = ({ postId }) => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -38,6 +39,7 @@ const PostEditForm = ({ postId, onFailure }) => {
           }
         } catch (error) {
           console.error("포스트 Fetch 에러:", error.message);
+          showToast_("포스트를 가져오는데 실패했습니다");
         }
       };
       fetchPostData();
@@ -55,17 +57,18 @@ const PostEditForm = ({ postId, onFailure }) => {
       try {
         // 검증 로직
         if (file.size > MAX_FILE_SIZE) {
-          console.error("파일 크기는 5MB 이하여야 합니다.");
+          console.error("파일 크기는 5MB 이하여야 합니다");
+          showToast_("파일 크기는 5MB 이하여야 합니다");
         }
 
         if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-          console.error("지원하지 않는 이미지 형식입니다.");
+          console.error("지원하지 않는 이미지 형식입니다");
+          showToast_("지원하지 않는 이미지 형식입니다");
         }
         setSelectedImage(URL.createObjectURL(file)); // 선택된 이미지 URL
         setImage(file); // 이미지 파일 선택
       } catch (error) {
         console.error(error.message);
-        onFailure();
       }
     }
   };
@@ -84,9 +87,7 @@ const PostEditForm = ({ postId, onFailure }) => {
     const isTitleValid = validateTitle(title);
     const isContentValid = validateContent(content);
 
-    if (isTitleValid && isContentValid) {
-      console.log("게시물 수정 요청:", { title, content });
-    } else {
+    if (!isTitleValid || !isContentValid) {
       setHelperText("제목과 내용을 모두 입력해주세요.");
     }
 
@@ -94,7 +95,6 @@ const PostEditForm = ({ postId, onFailure }) => {
 
     // 이미지 업로드
     if (image && image !== originalImage) {
-      console.log("이미지 업로드 요청");
       try {
         const formData = new FormData();
         formData.append("image", image);
@@ -106,6 +106,7 @@ const PostEditForm = ({ postId, onFailure }) => {
 
         if (response.status === 401) {
           console.error("로그인이 필요합니다.");
+          showToast_("로그인이 필요합니다.");
           // 페이지 새로고침
           setTimeout(() => {
             window.location.reload();
@@ -119,7 +120,7 @@ const PostEditForm = ({ postId, onFailure }) => {
         console.log("이미지 업로드 성공:", data);
       } catch (error) {
         console.error("이미지 업로드 실패:", error.message);
-        onFailure();
+        showToast_("이미지 업로드에 실패했습니다.");
       }
     }
 
@@ -147,13 +148,14 @@ const PostEditForm = ({ postId, onFailure }) => {
 
       if (response.status === 401) {
         console.error("로그인이 필요합니다.");
-
+        showToast_("로그인이 필요합니다.");
         // 페이지 새로고침
         setTimeout(() => {
           window.location.reload();
         }, 3000); // 3초 후 새로고침
       } else if (!response.ok) {
         console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
+        showToast_(postId ? "게시물 수정 실패" : "게시물 등록 실패");
       }
 
       const responseData = await response.json();
@@ -161,7 +163,6 @@ const PostEditForm = ({ postId, onFailure }) => {
       navigate(`/post/${newPostId}`);
     } catch (error) {
       console.error(error.message);
-      onFailure();
       // setHelperText("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };

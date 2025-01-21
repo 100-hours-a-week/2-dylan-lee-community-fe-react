@@ -81,6 +81,7 @@ textarea.comment-input {
   width: 100%;
   border: none;
   resize: none; /* 크기 조정 비활성화 */
+  color: #292c33;
   padding: 0 20px;
   margin: 28px 0 5px 0;
   font-size: 15px;
