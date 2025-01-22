@@ -6,7 +6,7 @@ import { showToast_ } from "./Toast";
 
 const LoginForm = ({ onFailure, onSignup }) => {
   const navigate = useNavigate();
-  const { setUser, fetchUser } = useSession();
+  const { fetchUser } = useSession();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,7 +77,6 @@ const LoginForm = ({ onFailure, onSignup }) => {
           throw new Error("로그아웃 실패");
         }
         // 세션 정보 업데이트
-        const userData = await data.json();
         await fetchUser();
         navigate("/");
       } catch (error) {

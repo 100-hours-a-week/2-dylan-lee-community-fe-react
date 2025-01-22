@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 import { showToast_ } from "./Toast";
 
 const SignupForm = ({ onComplete, onBack }) => {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
@@ -217,11 +214,13 @@ const SignupForm = ({ onComplete, onBack }) => {
           throw new Error(errorData.message || "회원가입 실패");
         }
 
-        const userData = await response.json();
         onBack();
         onComplete();
       } catch (error) {
         console.error("회원가입 실패:", error.message);
+        if (error.message === "이미 사용 중인 닉네임입니다.") {
+          setNicknameHelper("이미 사용 중인 닉네임입니다.");
+        }
         showToast_("회원가입에 실패했습니다.");
       }
     }

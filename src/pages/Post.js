@@ -7,7 +7,7 @@ import "../styles/Post.css";
 const Post = () => {
   const { postId } = useParams(); // URL 파라미터에서 postId 추출
   const [post, setPost] = useState(null);
-  const [commentsCount, setCommentsCount] = useState(0); // 댓글 수 상태 추가
+  const [setCommentsCount] = useState(0); // 댓글 수 상태 추가
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
