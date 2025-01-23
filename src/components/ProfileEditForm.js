@@ -94,17 +94,10 @@ const ProfileEditForm = () => {
           }
         );
 
-        if (uploadResponse.status === 401) {
-          console.error("로그인이 필요합니다.");
-          showToast_("로그인이 필요합니다.");
-          // 페이지 새로고침
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000); // 3초 후 새로고침
-        } else if (!uploadResponse.ok) {
-          throw new Error("이미지 업로드 실패");
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.message || "이미지 업로드 실패");
         }
-
         const uploadData = await uploadResponse.json();
         profileImageUrl = uploadData.url;
       }
