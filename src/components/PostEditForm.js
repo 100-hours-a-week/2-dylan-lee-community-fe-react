@@ -15,11 +15,9 @@ const PostEditForm = ({ postId }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
   const [helperText, setHelperText] = useState("");
-  const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     if (postId) {
-      console.log(baseUrl);
       const fetchPostData = async () => {
         try {
           const response = await api.get(`/api/v1/posts/${postId}`);
@@ -93,20 +91,18 @@ const PostEditForm = ({ postId }) => {
         const formData = new FormData();
         formData.append("image", image);
 
-        const response = await fetch(`${baseUrl}/api/v1/upload/post-images`, {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/upload/post-images`,
+          {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+          }
+        );
 
-        if (response.status === 401) {
-          console.error("로그인이 필요합니다.");
-          showToast_("로그인이 필요합니다.");
-          // 페이지 새로고침
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000); // 3초 후 새로고침
-        } else if (!response.ok) {
-          console.error("이미지 업로드 실패");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "이미지 업로드 실패");
         }
 
         const data = await response.json();
@@ -121,8 +117,8 @@ const PostEditForm = ({ postId }) => {
     try {
       const method = postId ? "PUT" : "POST";
       const url = postId
-        ? `${baseUrl}/api/v1/posts/${postId}`
-        : `${baseUrl}/api/v1/posts`;
+        ? `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}`
+        : `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts`;
       const response = await fetch(url, {
         method,
         headers: {
