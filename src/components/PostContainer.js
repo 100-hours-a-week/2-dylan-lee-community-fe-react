@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import Modal from "./Modal";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const PostContainer = (post) => {
   const [showModal, setShowModal] = useState(false);
@@ -28,25 +29,11 @@ const PostContainer = (post) => {
   // 유저 정보를 가져와서 좋아요 여부를 확인
   const fetchLikeStatus = async () => {
     try {
-      const response = await fetch(
-        `/api/v1/posts/${post.post_id}/like-status`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
+      const response = await api.get(
+        `/api/v1/posts/${post.post_id}/like-status`
       );
 
-      if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!response.ok) {
-        throw new Error("좋아요 상태 가져오기 실패");
-      }
-
-      const { isLike } = await response.json();
+      const { isLike } = response;
       setIsLike(isLike.isLike); // 유저의 좋아요 상태 설정
     } catch (error) {
       console.error("좋아요 상태 초기화 실패:", error.message);
@@ -55,24 +42,11 @@ const PostContainer = (post) => {
 
   const fetchCommentsCount = async () => {
     try {
-      const response = await fetch(
-        `/api/v1/posts/${post.post_id}/comment-count`,
-        {
-          method: "GET",
-        }
+      const response = await api.get(
+        `/api/v1/posts/${post.post_id}/comment-count`
       );
 
-      if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!response.ok) {
-        throw new Error("댓글 수 가져오기 실패");
-      }
-
-      const { count } = await response.json();
+      const { count } = response;
       setCommentsCount(count); // 댓글 수 업데이트
     } catch (error) {
       console.error("댓글 수 업데이트 실패:", error.message);
@@ -89,24 +63,13 @@ const PostContainer = (post) => {
 
   const handleConfirm = async () => {
     try {
-      const response = await fetch(`/api/v1/posts/${post.post_id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        navigate("/");
-      } else if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        showToast_("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      }
+      const response = await api.delete(`/api/v1/posts/${post.post_id}`);
     } catch (error) {
       console.error("게시글 삭제 실패:", error.message);
       showToast_("게시글 삭제에 실패했습니다.");
     } finally {
       handleCloseModal();
+      navigate("/");
     }
   };
 
@@ -115,25 +78,8 @@ const PostContainer = (post) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/v1/posts/${post.post_id}/like`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        showToast_("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!response.ok) {
-        console.error("좋아요 처리 실패");
-        showToast_("좋아요 처리에 실패했습니다");
-      }
-
-      const { isLike: updatedIsLike, likes: updatedLikes } =
-        await response.json();
+      const response = await api.post(`/api/v1/posts/${post.post_id}/like`);
+      const { isLike: updatedIsLike, likes: updatedLikes } = response;
       setIsLike(updatedIsLike);
       setLikes(updatedLikes);
     } catch (error) {
@@ -187,7 +133,7 @@ const PostContainer = (post) => {
       <div className="post-content">
         {post.image_path && (
           <img
-            src={`http://localhost:8000/api/v1/upload/${post.image_path}`}
+            src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/upload/${post.image_path}`}
             alt="Example description"
             className="post-content-image"
           />

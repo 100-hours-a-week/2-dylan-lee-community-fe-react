@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "./Buttons";
 import "../styles/EditForm.css";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const PasswordEditForm = () => {
   const [password, setPassword] = useState("");
@@ -62,29 +63,11 @@ const PasswordEditForm = () => {
     e.preventDefault();
     if (handleValidation()) {
       try {
-        const response = await fetch(`/api/v1/users/password`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            password,
-          }),
-          credentials: "include",
+        const response = await api.put("/api/v1/users/password", {
+          password,
         });
 
-        if (response.status === 401) {
-          console.error("로그인이 필요합니다.");
-          showToast_("로그인이 필요합니다.");
-          // 페이지 새로고침
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000); // 3초 후 새로고침
-        } else if (!response.ok) {
-          throw new Error("비밀번호 수정 실패");
-        }
-
-        showToast_("비밀번호가 수정되었습니다.");
+        showToast_("비밀번호가 수정되었습니다. 다시 로그인해주세요.");
         // 3초 후에 로그인 페이지로 이동
         setTimeout(() => {
           window.location.href = "/login";

@@ -4,6 +4,7 @@ import CommentBox from "../components/CommentBox";
 import Modal from "./Modal";
 import { convertTime } from "../utils/utils";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const CommentContainer = ({ postId, onCommentUpdated }) => {
   const [showModal, setShowModal] = useState(false);
@@ -31,27 +32,9 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
         : "";
 
       const url = `/api/v1/posts/${postId}/comments?${params}&limit=${limit}`;
+      const response = await api.get(url);
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        showToast_("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!response.ok) {
-        throw new Error(`코멘트 로드 에러: ${response.statusText}`);
-      }
-
-      const newComments = await response.json();
-
+      const newComments = response;
       setComments((prevComments) => {
         const uniqueComments = [
           ...prevComments,
@@ -128,22 +111,15 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
   const handleConfirm = async () => {
     if (!selectedCommentId) return;
     try {
-      const response = await fetch(
-        `/api/v1/posts/${postId}/comments/${selectedCommentId}`,
-        {
-          method: "DELETE",
-        }
+      const response = await api.delete(
+        `/api/v1/posts/${postId}/comments/${selectedCommentId}`
       );
-      if (response.ok) {
-        const updatedComment = await response.json();
-        const sortedComments = updatedComment.comments.sort(
-          (a, b) => new Date(a.created_at) - new Date(b.created_at)
-        );
-        setComments(sortedComments);
-      } else {
-        console.error("댓글 삭제 실패");
-        showToast_("댓글 삭제에 실패했습니다.");
-      }
+
+      const updatedComment = response;
+      const sortedComments = updatedComment.comments.sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+      );
+      setComments(sortedComments);
     } catch (error) {
       console.error("댓글 삭제 실패:", error.message);
       showToast_("댓글 삭제에 실패했습니다.");
@@ -171,7 +147,7 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
       // 댓글 수정 로직 추가
       try {
         const response = await fetch(
-          `/api/v1/posts/${postId}/comments/${editId}`,
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}/comments/${editId}`,
           {
             method: "PUT",
             headers: {
@@ -180,6 +156,7 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
             body: JSON.stringify({
               content: commentText,
             }),
+            credentials: "include",
           }
         );
         if (response.ok) {
@@ -203,15 +180,19 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
     } else {
       // 댓글 등록 로직 추가
       try {
-        const response = await fetch(`/api/v1/posts/${postId}/comments`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: commentText,
-          }),
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}/comments`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              content: commentText,
+            }),
+            credentials: "include",
+          }
+        );
         if (response.ok) {
           const updatedComment = await response.json();
           const sortedComments = updatedComment.comments.sort(

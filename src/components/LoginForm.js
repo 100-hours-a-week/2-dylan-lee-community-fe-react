@@ -3,6 +3,7 @@ import Button from "./Buttons";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const LoginForm = ({ onFailure, onSignup }) => {
   const navigate = useNavigate();
@@ -62,21 +63,10 @@ const LoginForm = ({ onFailure, onSignup }) => {
     if (handleValidation()) {
       try {
         // 서버에 로그인 요청
-        const data = await fetch("/api/v1/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
+        const data = await api.post("/api/v1/auth/login", {
+          email,
+          password,
         });
-
-        if (!data.ok) {
-          throw new Error("로그아웃 실패");
-        }
-        // 세션 정보 업데이트
         await fetchUser();
         navigate("/");
       } catch (error) {

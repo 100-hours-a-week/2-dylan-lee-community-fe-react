@@ -5,6 +5,7 @@ import Button from "../components/Buttons";
 import "../styles/Posts.css";
 import { convertTime } from "../utils/utils";
 import { showToast_ } from "../components/Toast";
+import api from "../utils/api";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -26,44 +27,17 @@ const Posts = () => {
         ? `lastCreatedAt=${convertTime(lastCreatedAt)}`
         : "";
       const url = `/api/v1/posts?${params}&limit=${limit}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`포스트 로드 에러: ${response.statusText}`);
-      }
-
-      const newPosts = await response.json();
-
-      setPosts((prevPosts) => {
-        const uniquePosts = [
-          ...prevPosts,
-          ...newPosts.filter(
-            (newPost) =>
-              !prevPosts.some(
-                (prevPost) => prevPost.created_at === newPost.created_at
-              )
-          ),
-        ];
-        return uniquePosts;
-      });
+      const response = await api.get(url);
+      const newPosts = response;
+      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
 
       if (newPosts.length < limit) {
         setHasMore(false);
       }
 
       if (newPosts.length > 0) {
-        const oldestPost = newPosts.reduce((oldest, post) =>
-          new Date(post.created_at) < new Date(oldest.created_at)
-            ? post
-            : oldest
-        );
-        setLastCreatedAt(oldestPost.created_at);
+        const latestPost = newPosts[newPosts.length - 1];
+        setLastCreatedAt(latestPost.created_at);
       }
     } catch (error) {
       console.error("포스트 Fetch 에러:", error.message);

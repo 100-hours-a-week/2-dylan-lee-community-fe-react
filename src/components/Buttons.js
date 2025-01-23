@@ -33,6 +33,7 @@ Button.propTypes = {
     "edit", // 수정 삭제 버튼
     "reaction",
     "image-delete", // 이미지 삭제 버튼
+    "comment",
   ]),
   size: PropTypes.oneOf([
     "tiny",
