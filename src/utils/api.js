@@ -1,0 +1,52 @@
+import axios from "axios";
+
+// 기본 API URL 설정
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL || `${window.location.origin}`;
+
+// Axios 인스턴스 생성
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true, // 세션 쿠키 포함
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// 요청 인터셉터 (선택)
+api.interceptors.request.use(
+  (config) => {
+    // 요청 전 처리 (예: 토큰 추가)
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 401 에러 처리 함수
+const handle401Error = () => {
+  console.error("로그인이 필요합니다.");
+  // 로그인 페이지로 리디렉션 또는 특정 메시지 표시
+  window.location.href = "/login"; // 예: 로그인 페이지로 리디렉션
+};
+
+// 응답 인터셉터 (선택)
+api.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      if (error.config.url !== "/api/v1/users/me") {
+        handle401Error();
+      }
+    } else {
+      console.error("API 에러:", error);
+    }
+    // 공통 에러 처리
+    return Promise.reject(error);
+  }
+);
+
+export default api;

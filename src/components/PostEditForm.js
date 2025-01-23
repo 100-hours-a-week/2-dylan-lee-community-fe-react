@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "../styles/PostForm.css";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
+import { profileImageUrl } from "../utils/utils";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const PostEditForm = ({ postId }) => {
   const navigate = useNavigate();
@@ -13,27 +15,19 @@ const PostEditForm = ({ postId }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [originalImage, setOriginalImage] = useState(null);
   const [helperText, setHelperText] = useState("");
+  const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     if (postId) {
+      console.log(baseUrl);
       const fetchPostData = async () => {
         try {
-          const response = await fetch(`/api/v1/posts/${postId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-          if (!response.ok) {
-            throw new Error(
-              `포스트를 가져오는데 실패했습니다: ${response.statusText}`
-            );
-          }
-          const postData = await response.json();
+          const response = await api.get(`/api/v1/posts/${postId}`);
+          const postData = response;
           setTitle(postData.title);
           setContent(postData.content);
           if (postData.image_path) {
-            const imageUrl = `http://localhost:8000/api/v1/upload/${postData.image_path}`;
+            const imageUrl = profileImageUrl(postData.image_path);
             setSelectedImage(imageUrl);
             setOriginalImage(imageUrl);
           }
@@ -99,7 +93,7 @@ const PostEditForm = ({ postId }) => {
         const formData = new FormData();
         formData.append("image", image);
 
-        const response = await fetch(`/api/v1/upload/post-images`, {
+        const response = await fetch(`${baseUrl}/api/v1/upload/post-images`, {
           method: "POST",
           body: formData,
         });
@@ -126,7 +120,9 @@ const PostEditForm = ({ postId }) => {
     // 게시물 등록 또는 수정 요청
     try {
       const method = postId ? "PUT" : "POST";
-      const url = postId ? `/api/v1/posts/${postId}` : `/api/v1/posts`;
+      const url = postId
+        ? `${baseUrl}/api/v1/posts/${postId}`
+        : `${baseUrl}/api/v1/posts`;
       const response = await fetch(url, {
         method,
         headers: {
@@ -137,6 +133,7 @@ const PostEditForm = ({ postId }) => {
           content,
           image_path: postImageUrl || null,
         }),
+        credentials: "include",
       });
 
       if (response.status === 401) {
@@ -156,7 +153,6 @@ const PostEditForm = ({ postId }) => {
       navigate(`/post/${newPostId}`);
     } catch (error) {
       console.error(error.message);
-      // setHelperText("오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 

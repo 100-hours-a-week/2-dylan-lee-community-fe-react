@@ -5,6 +5,7 @@ import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
 import { profileImageUrl } from "../utils/utils";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const ProfileEditForm = () => {
   const { user } = useSession();
@@ -16,6 +17,7 @@ const ProfileEditForm = () => {
   const [nicknameHelper, setNicknameHelper] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     let profileImagePath = "";
@@ -84,7 +86,7 @@ const ProfileEditForm = () => {
         formData.append("image", selectedImage);
 
         const uploadResponse = await fetch(
-          "http://localhost:8000/api/v1/upload/profile-image",
+          `${baseUrl}/api/v1/upload/profile-image`,
           {
             method: "POST",
             body: formData,
@@ -107,7 +109,7 @@ const ProfileEditForm = () => {
         profileImageUrl = uploadData.url;
       }
 
-      const updateResponse = await fetch("/api/v1/users/me", {
+      const updateResponse = await fetch(`${baseUrl}/api/v1/users/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -124,22 +126,7 @@ const ProfileEditForm = () => {
       }
 
       // 명시적으로 세션 새로고침 요청
-      const sessionUpdateResponse = await fetch("/api/v1/auth/session", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (sessionUpdateResponse.status === 401) {
-        console.error("로그인이 필요합니다.");
-        showToast_("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!sessionUpdateResponse.ok) {
-        throw new Error("세션 갱신 실패");
-      }
-
+      const sessionUpdateResponse = await api.get("/api/v1/auth/session");
       showToast_("프로필이 수정되었습니다");
       setTimeout(() => {
         window.location.reload();
@@ -162,21 +149,7 @@ const ProfileEditForm = () => {
 
   const handleConfirm = async () => {
     try {
-      const response = await fetch("/api/v1/users/me", {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!response.ok) {
-        throw new Error("회원 탈퇴 실패");
-      }
-
+      const response = await api.delete("/api/v1/users/me");
       setShowModal(false); // 모달 닫기
       showToast_("회원 탈퇴되었습니다");
       setTimeout(() => {
@@ -254,9 +227,7 @@ const ProfileEditForm = () => {
             </div>
           </div>
         </div>
-        <Button type="comment" size="round">
-          수정하기
-        </Button>
+        <Button type="comment">수정하기</Button>
         <Button
           type="ghost"
           onClick={(e) => {

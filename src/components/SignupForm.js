@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 import { showToast_ } from "./Toast";
+import api from "../utils/api";
 
 const SignupForm = ({ onComplete, onBack }) => {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
@@ -86,23 +84,16 @@ const SignupForm = ({ onComplete, onBack }) => {
   };
 
   const checkEmail = async (value) => {
-    if (!value || !emailRegex.test(value)) {
-      setEmailHelper("올바른 이메일 주소 형식을 입력해주세요.");
-      return false;
-    }
     // 서버에 이메일 중복 확인 요청
-    const response = await fetch("/api/v1/auth/check-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: value }),
-    });
-    if (!response.ok) {
+    try {
+      const response = await api.post("/api/v1/auth/check-email", {
+        email: value,
+      });
+      return true;
+    } catch (error) {
       setEmailHelper("이미 사용 중인 이메일 주소입니다.");
-      return false;
     }
-    return true;
+    return false;
   };
 
   const validatePassword = (value) => {
@@ -185,11 +176,14 @@ const SignupForm = ({ onComplete, onBack }) => {
           const formData = new FormData();
           formData.append("image", profileImage);
 
-          const response = await fetch("/api/v1/upload/profile-image", {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-          });
+          const response = await fetch(
+            `${process.env.REACT_APP_API_BASE_URL}/api/v1/upload/profile-image`,
+            {
+              method: "POST",
+              body: formData,
+              credentials: "include",
+            }
+          );
           if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || "이미지 업로드 실패");
@@ -199,29 +193,34 @@ const SignupForm = ({ onComplete, onBack }) => {
         }
 
         // 서버에 회원가입 요청
-        const response = await fetch("/api/v1/auth/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-            nickname,
-            profileImagePath: profileImageUrl,
-          }),
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}/api/v1/auth/signup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+              nickname,
+              profileImagePath: profileImageUrl,
+            }),
+          }
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.message || "회원가입 실패");
         }
 
-        const userData = await response.json();
         onBack();
         onComplete();
       } catch (error) {
         console.error("회원가입 실패:", error.message);
+        if (error.message === "이미 사용 중인 닉네임입니다.") {
+          setNicknameHelper("이미 사용 중인 닉네임입니다.");
+        }
         showToast_("회원가입에 실패했습니다.");
       }
     }

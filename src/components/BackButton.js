@@ -16,13 +16,7 @@ const BackButton = () => {
 
   // 뒤로가기 버튼 표시 여부
   useEffect(() => {
-    const hidePaths = [
-      "/",
-      "/login",
-      "/posts",
-      "/edit_profile",
-      "/edit_password",
-    ];
+    const hidePaths = ["/", "/login", "/posts"];
     setIsBackButtonVisible(!hidePaths.includes(location.pathname));
   }, [location.pathname]);
 

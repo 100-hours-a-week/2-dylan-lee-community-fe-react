@@ -51,10 +51,12 @@ function convertTime(date) {
 }
 
 function profileImageUrl(profile_image_path) {
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
   if (!profile_image_path) {
     return `/assets/images/default_profile.jpeg`;
   }
-  const address = `http://localhost:8000/api/v1/upload/${profile_image_path}`;
+  const address = `${API_BASE_URL}/api/v1/upload/${profile_image_path}`;
   return address;
 }
 

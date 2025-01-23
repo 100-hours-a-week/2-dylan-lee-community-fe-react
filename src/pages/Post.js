@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PostContainer from "../components/PostContainer";
 import CommentContainer from "../components/CommentContainer";
+import api from "../utils/api";
 import "../styles/Post.css";
 
 const Post = () => {
@@ -14,23 +15,9 @@ const Post = () => {
     const fetchPost = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/v1/posts/${postId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          console.error(
-            "포스트를 가져오는데 실패했습니다:",
-            response.statusText
-          );
-        }
-
-        const postData = await response.json();
+        const response = await api.get(`/api/v1/posts/${postId}`);
+        const postData = response;
         setPost(postData);
-        setCommentsCount(postData.comments_count); // 댓글 수 업데이트
       } catch (error) {
         console.error("포스트 Fetch 에러:", error);
       } finally {
@@ -48,11 +35,9 @@ const Post = () => {
   // 댓글 수 갱신 함수
   const fetchCommentsCount = async () => {
     try {
-      const response = await fetch(`/api/v1/posts/${postId}/comment-count`);
-      if (!response.ok) {
-        throw new Error("댓글 수 가져오기 실패");
-      }
-      const { count } = await response.json();
+      const response = await api.get(`/api/v1/posts/${postId}/comment-count`);
+      const { count } = response;
+      console.log("fetchCommentsCount 호출됨");
       setCommentsCount(count);
     } catch (error) {
       console.error("댓글 수 갱신 실패:", error.message);
