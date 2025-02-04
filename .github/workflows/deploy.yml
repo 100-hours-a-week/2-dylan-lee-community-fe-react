@@ -18,8 +18,12 @@ jobs:
         with:
           node-version: "23"
 
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.REACT_APP_API_BASE_URL }}" > .env
+
       - name: Install Dependencies
-        run: npm install --production
+        run: npm ci --only=production
 
       - name: Build
         run: npm run build
