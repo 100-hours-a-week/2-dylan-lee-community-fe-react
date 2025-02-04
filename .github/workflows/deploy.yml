@@ -20,7 +20,7 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "${{ secrets.REACT_APP_API_BASE_URL }}" > .env
+          echo "REACT_APP_API_BASE_URL=${{ secrets.REACT_APP_API_BASE_URL }}" > .env
 
       - name: Install Dependencies
         run: npm ci --only=production
