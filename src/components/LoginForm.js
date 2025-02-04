@@ -63,7 +63,7 @@ const LoginForm = ({ onFailure, onSignup }) => {
     if (handleValidation()) {
       try {
         // 서버에 로그인 요청
-        const data = await api.post("/api/v1/auth/login", {
+        await api.post("/api/v1/auth/login", {
           email,
           password,
         });
