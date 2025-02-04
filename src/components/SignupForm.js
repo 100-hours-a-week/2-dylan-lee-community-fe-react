@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
@@ -36,26 +37,26 @@ const SignupForm = ({ onComplete, onBack }) => {
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
   useEffect(() => {
+    const validateStep = () => {
+      switch (step) {
+        case 1:
+          setIsNextDisabled(!validateEmail(email));
+          break;
+        case 2:
+          setIsNextDisabled(
+            !validatePassword(password) || !validatePasswordCheck(passwordCheck)
+          );
+          break;
+        case 3:
+          setIsNextDisabled(!validateNickname(nickname));
+          break;
+        default:
+          setIsNextDisabled(true);
+      }
+    };
+
     validateStep();
   }, [email, password, passwordCheck, nickname, step]);
-
-  const validateStep = () => {
-    switch (step) {
-      case 1:
-        setIsNextDisabled(!validateEmail(email));
-        break;
-      case 2:
-        setIsNextDisabled(
-          !validatePassword(password) || !validatePasswordCheck(passwordCheck)
-        );
-        break;
-      case 3:
-        setIsNextDisabled(!validateNickname(nickname));
-        break;
-      default:
-        setIsNextDisabled(true);
-    }
-  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];

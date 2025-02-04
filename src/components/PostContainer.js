@@ -22,36 +22,36 @@ const PostContainer = (post) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 유저 정보를 가져와서 좋아요 여부를 확인
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await api.get(
+          `/api/v1/posts/${post.post_id}/like-status`
+        );
+
+        const { isLike } = response;
+        setIsLike(isLike.isLike); // 유저의 좋아요 상태 설정
+      } catch (error) {
+        console.error("좋아요 상태 초기화 실패:", error.message);
+      }
+    };
+
+    const fetchCommentsCount = async () => {
+      try {
+        const response = await api.get(
+          `/api/v1/posts/${post.post_id}/comment-count`
+        );
+
+        const { count } = response;
+        setCommentsCount(count); // 댓글 수 업데이트
+      } catch (error) {
+        console.error("댓글 수 업데이트 실패:", error.message);
+      }
+    };
+
     fetchLikeStatus();
     fetchCommentsCount();
   }, [post.post_id]);
-
-  // 유저 정보를 가져와서 좋아요 여부를 확인
-  const fetchLikeStatus = async () => {
-    try {
-      const response = await api.get(
-        `/api/v1/posts/${post.post_id}/like-status`
-      );
-
-      const { isLike } = response;
-      setIsLike(isLike.isLike); // 유저의 좋아요 상태 설정
-    } catch (error) {
-      console.error("좋아요 상태 초기화 실패:", error.message);
-    }
-  };
-
-  const fetchCommentsCount = async () => {
-    try {
-      const response = await api.get(
-        `/api/v1/posts/${post.post_id}/comment-count`
-      );
-
-      const { count } = response;
-      setCommentsCount(count); // 댓글 수 업데이트
-    } catch (error) {
-      console.error("댓글 수 업데이트 실패:", error.message);
-    }
-  };
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -63,7 +63,7 @@ const PostContainer = (post) => {
 
   const handleConfirm = async () => {
     try {
-      const response = await api.delete(`/api/v1/posts/${post.post_id}`);
+      await api.delete(`/api/v1/posts/${post.post_id}`);
     } catch (error) {
       console.error("게시글 삭제 실패:", error.message);
       showToast_("게시글 삭제에 실패했습니다.");
