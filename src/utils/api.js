@@ -37,9 +37,17 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-      if (error.config.url !== "/api/v1/users/me") {
-        handle401Error();
+    if (error.response) {
+      if (error.response.status === 401) {
+        if (error.config.url !== "/api/v1/users/me") {
+          handle401Error();
+        }
+      } else if (error.response.status === 409) {
+        // 409 에러는 콘솔에 출력하지 않음
+        return Promise.reject(error);
+      } else {
+        // 다른 에러는 콘솔에 출력
+        console.error("API 에러:", error.response);
       }
     } else {
       console.error("API 에러:", error);

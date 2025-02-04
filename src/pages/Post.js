@@ -37,7 +37,6 @@ const Post = () => {
     try {
       const response = await api.get(`/api/v1/posts/${postId}/comment-count`);
       const { count } = response;
-      console.log("fetchCommentsCount 호출됨");
       setCommentsCount(count);
     } catch (error) {
       console.error("댓글 수 갱신 실패:", error.message);
