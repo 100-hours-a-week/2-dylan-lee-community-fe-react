@@ -15,7 +15,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       // 서버에 로그아웃 요청
-      const data = await api.delete("/api/v1/auth/logout");
+      await api.delete("/api/v1/auth/logout");
       setUser(null);
       navigate("/"); // 로그인 페이지로 이동
     } catch (error) {

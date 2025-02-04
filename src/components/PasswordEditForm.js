@@ -63,7 +63,7 @@ const PasswordEditForm = () => {
     e.preventDefault();
     if (handleValidation()) {
       try {
-        const response = await api.put("/api/v1/users/password", {
+        await api.put("/api/v1/users/password", {
           password,
         });
 
