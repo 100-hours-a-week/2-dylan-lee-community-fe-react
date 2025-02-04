@@ -13,7 +13,7 @@ export const SessionProvider = ({ children }) => {
       const response = await api.get("/api/v1/users/me");
       setUser(response);
     } catch (error) {
-      console.error("Failed to fetch user:", error);
+      // console.error("Failed to fetch user:", error);
       setUser(null); // 에러 시 비로그인 상태로 설정
     } finally {
       setLoading(false);

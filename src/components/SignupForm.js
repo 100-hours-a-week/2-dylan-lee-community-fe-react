@@ -20,13 +20,15 @@ const SignupForm = ({ onComplete, onBack }) => {
   const [isNextDisabled, setIsNextDisabled] = useState(true);
   const goToNextStep = async () => {
     if (step === 1) {
-      const isEmailValid = await checkEmail(email);
+      const isEmailValid = await validateEmail(email);
       if (!isEmailValid) {
+        setIsNextDisabled(true);
         return;
       }
     }
     setStep((prev) => prev + 1);
   };
+
   const goToPreviousStep = () => setStep((prev) => Math.max(1, prev - 1));
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -79,6 +81,11 @@ const SignupForm = ({ onComplete, onBack }) => {
       setEmailHelper("올바른 이메일 주소 형식을 입력해주세요.");
       return false;
     }
+    const isEmailValid = await checkEmail(value);
+    if (!isEmailValid) {
+      setEmailHelper("이미 사용 중인 이메일 주소입니다.");
+      return false;
+    }
     setEmailHelper("");
     return true;
   };
@@ -86,12 +93,14 @@ const SignupForm = ({ onComplete, onBack }) => {
   const checkEmail = async (value) => {
     // 서버에 이메일 중복 확인 요청
     try {
-      const response = await api.post("/api/v1/auth/check-email", {
+      await api.post("/api/v1/auth/check-email", {
         email: value,
       });
       return true;
     } catch (error) {
-      setEmailHelper("이미 사용 중인 이메일 주소입니다.");
+      if (error.response.status === 409) {
+        setEmailHelper("이미 사용 중인 이메일 주소입니다.");
+      }
     }
     return false;
   };
