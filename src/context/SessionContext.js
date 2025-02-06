@@ -11,6 +11,7 @@ export const SessionProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await api.get("/api/v1/users/me");
+      console.log("User info response:", response);
       setUser(response);
     } catch (error) {
       // console.error("Failed to fetch user:", error);

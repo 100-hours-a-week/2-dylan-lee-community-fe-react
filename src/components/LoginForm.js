@@ -63,10 +63,12 @@ const LoginForm = ({ onFailure, onSignup }) => {
     if (handleValidation()) {
       try {
         // 서버에 로그인 요청
-        await api.post("/api/v1/auth/login", {
+        const loginResponse = await api.post("/api/v1/auth/login", {
           email,
           password,
         });
+        // 로그인 성공 시
+        console.log("로그인 응답:", loginResponse);
         await fetchUser();
         navigate("/");
       } catch (error) {
