@@ -17,6 +17,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // 요청 전 처리 (예: 토큰 추가)
+    config.withCredentials = true;
     return config;
   },
   (error) => {
