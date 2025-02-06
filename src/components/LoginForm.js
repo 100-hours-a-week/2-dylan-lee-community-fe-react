@@ -62,6 +62,9 @@ const LoginForm = ({ onFailure, onSignup }) => {
     e.preventDefault();
     if (handleValidation()) {
       try {
+        // 기존 세션 쿠키 삭제
+        document.cookie =
+          "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         // 서버에 로그인 요청
         const loginResponse = await api.post("/api/v1/auth/login", {
           email,

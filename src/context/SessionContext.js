@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-// import api from "../utils/api";
-import axios from "axios";
+import api from "../utils/api";
+// import axios from "axios";
 
 const SessionContext = createContext(null);
 
@@ -11,13 +11,15 @@ export const SessionProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/api/v1/users/me`,
-        {
-          withCredentials: true,
-        }
-      );
-      // const response = await api.get("/api/v1/users/me");
+      // const response = await axios.get(
+      //   `${process.env.REACT_APP_API_BASE_URL}/api/v1/users/me`,
+      //   {
+      //     withCredentials: true,
+      //   }
+      // );
+      const response = await api.get("/api/v1/users/me", {
+        withCredentials: true,
+      });
       console.log("User info response:", response.data);
       setUser(response.data);
     } catch (error) {
