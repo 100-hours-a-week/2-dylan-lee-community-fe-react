@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import PostContainer from "../components/PostContainer";
 import CommentContainer from "../components/CommentContainer";
 import api from "../utils/api";
+import { viewPost } from "../utils/cookie";
 import "../styles/Post.css";
 
 const Post = () => {
@@ -19,6 +20,7 @@ const Post = () => {
         const response = await api.get(`/api/v1/posts/${postId}`);
         const postData = response;
         setPost(postData);
+        viewPost(postId);
       } catch (error) {
         console.error("포스트 Fetch 에러:", error);
       } finally {

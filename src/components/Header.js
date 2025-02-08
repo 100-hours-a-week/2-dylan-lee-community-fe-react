@@ -6,7 +6,7 @@ import { profileImageUrl } from "../utils/utils";
 import api from "../utils/api";
 
 const Header = () => {
-  const { setUser, user, loading } = useSession();
+  const { logout, user, loading } = useSession();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const navigate = useNavigate();
@@ -14,9 +14,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      // 서버에 로그아웃 요청
-      await api.delete("/api/v1/auth/logout");
-      setUser(null);
+      await logout();
       navigate("/"); // 로그인 페이지로 이동
     } catch (error) {
       console.error("로그아웃 실패:", error.message);
