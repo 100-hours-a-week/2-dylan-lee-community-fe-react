@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 import { useSession } from "../context/SessionContext";
 import { profileImageUrl } from "../utils/utils";
-import api from "../utils/api";
 
 const Header = () => {
   const { logout, user, loading } = useSession();
