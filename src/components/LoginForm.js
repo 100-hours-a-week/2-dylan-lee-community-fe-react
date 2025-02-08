@@ -3,12 +3,11 @@ import Button from "./Buttons";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../context/SessionContext";
 import { showToast_ } from "./Toast";
-import api from "../utils/api";
 
 const LoginForm = ({ onFailure, onSignup }) => {
   const navigate = useNavigate();
-  const { fetchUser } = useSession();
 
+  const { login } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailHelper, setEmailHelper] = useState("");
@@ -62,17 +61,7 @@ const LoginForm = ({ onFailure, onSignup }) => {
     e.preventDefault();
     if (handleValidation()) {
       try {
-        // 기존 세션 쿠키 삭제
-        document.cookie =
-          "connect.sid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        // 서버에 로그인 요청
-        const loginResponse = await api.post("/api/v1/auth/login", {
-          email,
-          password,
-        });
-        // 로그인 성공 시
-        console.log("로그인 응답:", loginResponse);
-        await fetchUser();
+        await login(email, password);
         navigate("/");
       } catch (error) {
         console.error("로그인 실패:", error.message);

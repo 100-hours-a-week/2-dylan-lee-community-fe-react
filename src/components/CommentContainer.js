@@ -147,24 +147,17 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
     if (isEditing && editId !== null) {
       // 댓글 수정 로직 추가
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}/comments/${editId}`,
+        const response = await api.put(
+          `/api/v1/posts/${postId}/comments/${editId}`,
           {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              content: commentText,
-            }),
-            credentials: "include",
+            content: commentText,
           }
         );
-        if (response.ok) {
+        if (response) {
           setCommentText("");
           setIsEditing(false);
           setEditId(null);
-          const updatedComment = await response.json();
+          const updatedComment = response;
           const sortedComments = updatedComment.comments.sort(
             (a, b) => new Date(a.created_at) - new Date(b.created_at)
           );
@@ -181,21 +174,12 @@ const CommentContainer = ({ postId, onCommentUpdated }) => {
     } else {
       // 댓글 등록 로직 추가
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}/comments`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              content: commentText,
-            }),
-            credentials: "include",
-          }
-        );
-        if (response.ok) {
-          const updatedComment = await response.json();
+        const response = await api.post(`/api/v1/posts/${postId}/comments`, {
+          content: commentText,
+        });
+
+        if (response) {
+          const updatedComment = response;
           const sortedComments = updatedComment.comments.sort(
             (a, b) => new Date(a.created_at) - new Date(b.created_at)
           );
