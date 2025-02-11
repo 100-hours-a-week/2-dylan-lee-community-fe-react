@@ -3,7 +3,7 @@ import {
   formatDate,
   formatContentAsParagraphs,
   titleOverflow,
-  profileImageUrl,
+  getImageUrl,
 } from "../utils/utils";
 import { useSession } from "../context/SessionContext";
 import { useNavigate } from "react-router-dom";
@@ -97,10 +97,7 @@ const PostContainer = (post) => {
         <div className="post-info">
           <div className="author-container">
             <div className="profile-circle">
-              <img
-                src={profileImageUrl(post.profile_image)}
-                alt="프로필 이미지"
-              />
+              <img src={getImageUrl(post.profile_image)} alt="프로필 이미지" />
             </div>
             <span className="author-name">{post.author}</span>
             <div className="post-date">{formatDate(post.created_at)}</div>
@@ -133,7 +130,7 @@ const PostContainer = (post) => {
       <div className="post-content">
         {post.image_path && (
           <img
-            src={`${process.env.REACT_APP_API_BASE_URL}/api/v1/upload/${post.image_path}`}
+            src={getImageUrl(post.image_path)}
             alt="Example description"
             className="post-content-image"
           />

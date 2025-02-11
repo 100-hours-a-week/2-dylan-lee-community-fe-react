@@ -4,8 +4,9 @@ import Button from "./Buttons";
 import "../styles/EditForm.css";
 import Modal from "./Modal";
 import { useSession } from "../context/SessionContext";
-import { profileImageUrl } from "../utils/utils";
+import { getImageUrl } from "../utils/utils";
 import { showToast_ } from "./Toast";
+import { uploadToS3 } from "../utils/s3Upload";
 import api from "../utils/api";
 
 const ProfileEditForm = () => {
@@ -23,7 +24,7 @@ const ProfileEditForm = () => {
   useEffect(() => {
     let profileImagePath = "";
     if (user && user.profile_image_path) {
-      profileImagePath = profileImageUrl(user.profile_image_path);
+      profileImagePath = getImageUrl(user.profile_image_path);
     }
     setProfileImage(profileImagePath);
     setEmail(user.email);
@@ -83,44 +84,20 @@ const ProfileEditForm = () => {
       }
       // 이미지 업로드
       if (selectedImage) {
-        const formData = new FormData();
-        formData.append("image", selectedImage);
-
-        const uploadResponse = await fetch(
-          `${baseUrl}/api/v1/upload/profile-image`,
-          {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-          }
-        );
-
-        if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json();
-          throw new Error(errorData.message || "이미지 업로드 실패");
-        }
-        const uploadData = await uploadResponse.json();
-        profileImageUrl = uploadData.url;
+        profileImageUrl = await uploadToS3(selectedImage, "post");
       }
 
-      const updateResponse = await fetch(`${baseUrl}/api/v1/users/me`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nickname,
-          profileImagePath: profileImageUrl,
-        }),
-        credentials: "include",
+      const updateResponse = await api.put("/api/v1/users/me", {
+        nickname,
+        profileImagePath: profileImageUrl,
       });
 
-      if (!updateResponse.ok) {
+      if (!updateResponse) {
         throw new Error("프로필 수정 실패");
       }
 
       // 명시적으로 세션 새로고침 요청
-      const sessionUpdateResponse = await api.get("/api/v1/auth/session");
+      await api.get("/api/v1/auth/session");
       showToast_("프로필이 수정되었습니다");
       setTimeout(() => {
         window.location.reload();

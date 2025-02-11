@@ -1,8 +1,11 @@
 import React from "react";
-import { formatDate, formatContentAsParagraphs } from "../utils/utils";
+import {
+  formatDate,
+  formatContentAsParagraphs,
+  getImageUrl,
+} from "../utils/utils";
 import "../styles/Posts.css";
 import Button from "./Buttons";
-import { profileImageUrl } from "../utils/utils";
 import { useSession } from "../context/SessionContext";
 
 const CommentBox = ({ comment, onEditClick, onDeleteClick }) => {
@@ -13,10 +16,7 @@ const CommentBox = ({ comment, onEditClick, onDeleteClick }) => {
       <div className="comment-info">
         <div className="author-container">
           <div className="profile-circle">
-            <img
-              src={profileImageUrl(comment.profile_image)}
-              alt="프로필 이미지"
-            />
+            <img src={getImageUrl(comment.profile_image)} alt="프로필 이미지" />
           </div>
           <span className="author-name">{comment.author}</span>
           <div className="post-date">{formatDate(comment.created_at)}</div>

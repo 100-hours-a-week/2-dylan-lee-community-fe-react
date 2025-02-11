@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "../styles/PostForm.css";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
-import { profileImageUrl } from "../utils/utils";
+import { getImageUrl } from "../utils/utils";
+import { uploadToS3 } from "../utils/s3Upload";
 import { showToast_ } from "./Toast";
 import api from "../utils/api";
 
@@ -25,7 +26,7 @@ const PostEditForm = ({ postId }) => {
           setTitle(postData.title);
           setContent(postData.content);
           if (postData.image_path) {
-            const imageUrl = profileImageUrl(postData.image_path);
+            const imageUrl = getImageUrl(postData.image_path);
             setSelectedImage(imageUrl);
             setOriginalImage(imageUrl);
           }
@@ -88,28 +89,11 @@ const PostEditForm = ({ postId }) => {
     // 이미지 업로드
     if (image && image !== originalImage) {
       try {
-        const formData = new FormData();
-        formData.append("image", image);
-
-        const response = await fetch(
-          `${process.env.REACT_APP_API_BASE_URL}/api/v1/upload/post-images`,
-          {
-            method: "POST",
-            body: formData,
-            credentials: "include",
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "이미지 업로드 실패");
-        }
-
-        const data = await response.json();
-        postImageUrl = data.url;
+        postImageUrl = await uploadToS3(image, "post");
       } catch (error) {
         console.error("이미지 업로드 실패:", error.message);
         showToast_("이미지 업로드에 실패했습니다.");
+        return;
       }
     }
 
@@ -117,22 +101,6 @@ const PostEditForm = ({ postId }) => {
     try {
       const method = postId ? "PUT" : "POST";
       const url = postId ? `/api/v1/posts/${postId}` : `/api/v1/posts`;
-
-      // const url = postId
-      //   ? `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}`
-      //   : `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts`;
-      // const response = await fetch(url, {
-      //   method,
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     title,
-      //     content,
-      //     image_path: postImageUrl || null,
-      //   }),
-      //   credentials: "include",
-      // });
 
       const response = await api({
         method,
@@ -156,24 +124,6 @@ const PostEditForm = ({ postId }) => {
       console.error("포스트 저장 실패:", error.message);
       showToast_("포스트 저장에 실패했습니다.");
     }
-    //   if (response.status === 401) {
-    //     console.error("로그인이 필요합니다.");
-    //     showToast_("로그인이 필요합니다.");
-    //     // 페이지 새로고침
-    //     setTimeout(() => {
-    //       window.location.reload();
-    //     }, 3000); // 3초 후 새로고침
-    //   } else if (!response.ok) {
-    //     console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
-    //     showToast_(postId ? "게시물 수정 실패" : "게시물 등록 실패");
-    //   }
-
-    //   const responseData = await response.json();
-    //   const newPostId = responseData.post_id.post_id || postId;
-    //   navigate(`/post/${newPostId}`);
-    // } catch (error) {
-    //   console.error(error.message);
-    // }
   };
 
   return (

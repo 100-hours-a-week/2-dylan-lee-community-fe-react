@@ -1,7 +1,7 @@
 import React from "react";
 import { formatDate, formatCount, titleOverflow } from "../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { profileImageUrl } from "../utils/utils";
+import { getImageUrl } from "../utils/utils";
 
 const PostBox = ({ post }) => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const PostBox = ({ post }) => {
       </div>
       <div className="author-container post-box-padding">
         <div className="profile-circle">
-          <img src={profileImageUrl(post.profile_image)} alt="프로필 이미지" />
+          <img src={getImageUrl(post.profile_image)} alt="프로필 이미지" />
         </div>
         <span className="author-name">{post.author}</span>
       </div>

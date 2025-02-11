@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Button from "./Buttons";
 import { MAX_FILE_SIZE, ALLOWED_FILE_TYPES } from "../utils/constants";
 import { showToast_ } from "./Toast";
+import { uploadToS3 } from "../utils/s3Upload";
 import api from "../utils/api";
 
 const SignupForm = ({ onComplete, onBack }) => {
@@ -183,23 +184,7 @@ const SignupForm = ({ onComplete, onBack }) => {
         let profileImageUrl = profileImage;
         // 이미지 업로드
         if (selectedImage) {
-          const formData = new FormData();
-          formData.append("image", profileImage);
-
-          const response = await fetch(
-            `${process.env.REACT_APP_API_BASE_URL}/api/v1/upload/profile-image`,
-            {
-              method: "POST",
-              body: formData,
-              credentials: "include",
-            }
-          );
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "이미지 업로드 실패");
-          }
-          const uploadData = await response.json();
-          profileImageUrl = uploadData.url;
+          profileImageUrl = await uploadToS3(profileImage, "profile");
         }
 
         // 서버에 회원가입 요청
