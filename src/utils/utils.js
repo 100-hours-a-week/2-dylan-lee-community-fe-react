@@ -50,13 +50,10 @@ function convertTime(date) {
   return utcDate.toISOString(); // ISO 8601 포맷으로 반환
 }
 
-function profileImageUrl(profile_image_path) {
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-  if (!profile_image_path) {
-    return `/assets/images/default_profile.jpeg`;
-  }
-  const address = `${API_BASE_URL}/api/v1/upload/${profile_image_path}`;
+function getImageUrl(image_path) {
+  console.log("getImageUrlcc", `${process.env.REACT_APP_CLOUDFRONT_URL}`);
+  const address = `${process.env.REACT_APP_CLOUDFRONT_URL}/images/${image_path}`;
+  console.log("getImageUrl", address);
   return address;
 }
 
@@ -66,5 +63,5 @@ export {
   titleOverflow,
   formatContentAsParagraphs,
   convertTime,
-  profileImageUrl,
+  getImageUrl,
 };

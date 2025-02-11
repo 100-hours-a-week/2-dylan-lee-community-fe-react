@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Header.css";
 import { useSession } from "../context/SessionContext";
-import { profileImageUrl } from "../utils/utils";
+import { getImageUrl } from "../utils/utils";
 
 const Header = () => {
   const { logout, user, loading } = useSession();
@@ -68,10 +68,7 @@ const Header = () => {
 
       {user ? (
         <div className="header-profile" onClick={toggleDropdown}>
-          <img
-            src={profileImageUrl(user.profile_image_path)}
-            alt="프로필 이미지"
-          />
+          <img src={getImageUrl(user.profile_image_path)} alt="프로필 이미지" />
         </div>
       ) : null}
       {dropdownVisible && (

@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import BackButton from "./components/BackButton";
 import { useSession } from "./context/SessionContext";
 import "./styles/Common.css";
+import PrivateRoute from "./components/PrivateRoute";
 
 // 페이지 컴포넌트를 동적으로 import
 const routes = [
@@ -80,9 +81,17 @@ const App = () => {
       <BackButton />
       <Suspense fallback={<div className="loading-spinner">로딩 중...</div>}>
         <Routes>
-          {routes.map(({ path, component: Component }) => (
-            <Route key={path} path={path} element={<Component />} />
-          ))}
+          {routes.map(({ path, component: Component }) =>
+            path === "/login" ? (
+              <Route key={path} path={path} element={<Component />} />
+            ) : (
+              <Route
+                key={path}
+                path={path}
+                element={<PrivateRoute element={Component} />}
+              />
+            )
+          )}
         </Routes>
       </Suspense>
     </Router>

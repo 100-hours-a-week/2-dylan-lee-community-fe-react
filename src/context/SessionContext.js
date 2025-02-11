@@ -30,7 +30,7 @@ export const SessionProvider = ({ children }) => {
         password,
       });
       const { token, user } = response;
-      setCookie("jwt", token, 7); // JWT를 쿠키에 저장 (7일 동안 유효)
+      setCookie("jwt", token, 1); // JWT를 쿠키에 저장 (7일 동안 유효)
       setUser(user);
       await fetchUser(); // 사용자 정보 갱신
     } catch (error) {

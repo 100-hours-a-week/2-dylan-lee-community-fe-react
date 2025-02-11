@@ -63,10 +63,13 @@ const PasswordEditForm = () => {
     e.preventDefault();
     if (handleValidation()) {
       try {
-        await api.put("/api/v1/users/password", {
+        const updateResponse = await api.put("/api/v1/users/password", {
           password,
         });
 
+        if (!updateResponse) {
+          throw new Error("비밀번호 수정 실패");
+        }
         showToast_("비밀번호가 수정되었습니다. 다시 로그인해주세요.");
         // 3초 후에 로그인 페이지로 이동
         setTimeout(() => {
