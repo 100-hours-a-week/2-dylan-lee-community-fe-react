@@ -19,7 +19,6 @@ const ProfileEditForm = () => {
   const [nicknameHelper, setNicknameHelper] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     let profileImagePath = "";
