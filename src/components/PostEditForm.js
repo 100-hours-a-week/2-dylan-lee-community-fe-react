@@ -116,40 +116,64 @@ const PostEditForm = ({ postId }) => {
     // 게시물 등록 또는 수정 요청
     try {
       const method = postId ? "PUT" : "POST";
-      const url = postId
-        ? `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}`
-        : `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts`;
-      const response = await fetch(url, {
+      const url = postId ? `/api/v1/posts/${postId}` : `/api/v1/posts`;
+
+      // const url = postId
+      //   ? `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts/${postId}`
+      //   : `${process.env.REACT_APP_API_BASE_URL}/api/v1/posts`;
+      // const response = await fetch(url, {
+      //   method,
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     title,
+      //     content,
+      //     image_path: postImageUrl || null,
+      //   }),
+      //   credentials: "include",
+      // });
+
+      const response = await api({
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        url,
+        data: {
           title,
           content,
           image_path: postImageUrl || null,
-        }),
-        credentials: "include",
+        },
       });
 
-      if (response.status === 401) {
-        console.error("로그인이 필요합니다.");
-        showToast_("로그인이 필요합니다.");
-        // 페이지 새로고침
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000); // 3초 후 새로고침
-      } else if (!response.ok) {
-        console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
-        showToast_(postId ? "게시물 수정 실패" : "게시물 등록 실패");
+      if (response) {
+        console.log("포스트 저장 성공:", response);
+        const newPostId = response.post_id.post_id || postId;
+        navigate(`/post/${newPostId}`);
+      } else {
+        console.error("포스트 저장 실패");
+        showToast_("포스트 저장에 실패했습니다.");
       }
-
-      const responseData = await response.json();
-      const newPostId = responseData.post_id.post_id || postId;
-      navigate(`/post/${newPostId}`);
     } catch (error) {
-      console.error(error.message);
+      console.error("포스트 저장 실패:", error.message);
+      showToast_("포스트 저장에 실패했습니다.");
     }
+    //   if (response.status === 401) {
+    //     console.error("로그인이 필요합니다.");
+    //     showToast_("로그인이 필요합니다.");
+    //     // 페이지 새로고침
+    //     setTimeout(() => {
+    //       window.location.reload();
+    //     }, 3000); // 3초 후 새로고침
+    //   } else if (!response.ok) {
+    //     console.error(postId ? "게시물 수정 실패" : "게시물 등록 실패");
+    //     showToast_(postId ? "게시물 수정 실패" : "게시물 등록 실패");
+    //   }
+
+    //   const responseData = await response.json();
+    //   const newPostId = responseData.post_id.post_id || postId;
+    //   navigate(`/post/${newPostId}`);
+    // } catch (error) {
+    //   console.error(error.message);
+    // }
   };
 
   return (
