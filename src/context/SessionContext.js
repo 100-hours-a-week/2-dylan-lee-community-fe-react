@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../utils/api";
 import { setCookie, deleteCookie, getCookie } from "../utils/cookie";
-// import axios from "axios";
 
 const SessionContext = createContext(null);
 
@@ -9,6 +8,7 @@ export const SessionProvider = ({ children }) => {
   const [user, setUser] = useState(null); // 사용자 정보 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
 
+  console.log("env", process.env);
   const fetchUser = async () => {
     try {
       setLoading(true);
