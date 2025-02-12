@@ -8,12 +8,10 @@ export const SessionProvider = ({ children }) => {
   const [user, setUser] = useState(null); // 사용자 정보 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
 
-  console.log("env", process.env.REACT_APP_API_BASE_URL);
   const fetchUser = async () => {
     try {
       setLoading(true);
       const response = await api.get("/api/v1/users/me");
-      console.log("User info response:", response);
       setUser(response);
     } catch (error) {
       console.error("Failed to fetch user:", error);

@@ -51,9 +51,10 @@ function convertTime(date) {
 }
 
 function getImageUrl(image_path) {
-  console.log("getImageUrlcc", `${process.env.REACT_APP_CLOUDFRONT_URL}`);
+  if (!image_path) {
+    return `/assets/images/default_profile.jpeg`; // 기본 이미지 경로
+  }
   const address = `${process.env.REACT_APP_CLOUDFRONT_URL}/images/${image_path}`;
-  console.log("getImageUrl", address);
   return address;
 }
 

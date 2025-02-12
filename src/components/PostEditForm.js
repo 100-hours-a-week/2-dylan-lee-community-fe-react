@@ -113,7 +113,6 @@ const PostEditForm = ({ postId }) => {
       });
 
       if (response) {
-        console.log("포스트 저장 성공:", response);
         const newPostId = response.post_id.post_id || postId;
         navigate(`/post/${newPostId}`);
       } else {
