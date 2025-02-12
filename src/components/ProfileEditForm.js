@@ -83,7 +83,7 @@ const ProfileEditForm = () => {
       }
       // 이미지 업로드
       if (selectedImage) {
-        profileImageUrl = await uploadToS3(selectedImage, "post");
+        profileImageUrl = await uploadToS3(selectedImage, "profile");
       }
 
       const updateResponse = await api.put("/api/v1/users/me", {
